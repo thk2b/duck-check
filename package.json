@@ -1,0 +1,14 @@
+{
+  "name": "duck_check",
+  "version": "1.0.0",
+  "description": "A minimalist tool to check the shape of objects and the type of properties, provided a declarative schema.",
+  "main": "duck_check.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^21.2.1"
+  }
+}
