@@ -34,8 +34,7 @@ Sample usage:
 
 The make_checker function takes an object called a schema. 
 The schema represents the blueprint against which to check any object. 
-A schema is a set of key:value pairs. The key is required to be present on the object for the test to pass. The value is expected to equal (`===`) the value of `typeof obj[key]`
-
+A schema is a set of key:value pairs.
 
 `make_checker(schema)` returns a check function. To test any object, call `check` with an object to be checked
 
