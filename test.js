@@ -24,9 +24,13 @@ describe('checking objects', () => {
     const incorrect_prop = {
         a2: 'a', b: 'b', c: { d: 1}
     }
+    const nan_prop = {
+        a: NaN, b: 'b', c: { d: 1}
+    }
     const correct_additional_prop = {
         a: 1, b: 'b', c: { d: 1}, f: 'f'
     }
+
     it('should return the object when a correct object is given', () => {
         expect(
             check(correct)
@@ -55,6 +59,11 @@ describe('checking objects', () => {
         expect(() => {
             check(correct_additional_prop)
         }).not.toThrow()
+    })
+    it('should handle NaN values when expecting numbers', ()=>{
+        expect(() => {
+            check(nan_prop)
+        }).toThrow()
     })
 })
 

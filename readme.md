@@ -43,4 +43,6 @@ For the test to pass:
 - The object must have all keys declared in the schema. 
 - The type of each property on the object, obtained through `typeof`, must equal (`===`) the string provided as a value in the schema. 
 
+Caveats:
 
+Because of limitations of `typeof`, it is not currently possible to check for a `null` property on an object, as `typeof null` is `'object'`

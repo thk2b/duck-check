@@ -1,6 +1,6 @@
 const check_object = (obj, schema) => {
     for(let key in schema){
-        if(typeof schema[key] === 'object'){
+        if(typeof schema[key] === 'object' && typeof schema[key] !== null){
             check_object(obj[key], schema[key])
         } else if(typeof obj[key] !== schema[key]){
             if(typeof obj[key] === 'undefined'){
@@ -14,9 +14,12 @@ const check_object = (obj, schema) => {
                 )
 
             }
+        } else if (schema[key] === 'number' && isNaN(obj[key])){
+            throw new Error(
+                `Expected property of type 'number' in object '${JSON.stringify(obj)}'. Got NaN instead`
+            )
         }
     }
-    console.log(obj)
     return obj
 }
 
