@@ -27,6 +27,15 @@ describe('checking objects', () => {
     const correct_additional_prop = {
         a: 1, b: 'b', c: { d: 1}, f: 'f'
     }
+    it('should return the object when a correct object is given', () => {
+        expect(
+            check(correct)
+        ).toBe(correct)
+        
+        // expected usage
+        const { a, b, c } = check(correct)
+        expect(a).toEqual(correct.a)
+    })
     it('should do nothing when a correct object is given', () => {
         expect(() => {
             check(correct)
@@ -48,3 +57,4 @@ describe('checking objects', () => {
         }).not.toThrow()
     })
 })
+

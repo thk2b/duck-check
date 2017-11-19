@@ -16,7 +16,8 @@ const check_object = (obj, schema) => {
             }
         }
     }
-
+    console.log(obj)
+    return obj
 }
 
 function make_checker(schema){
@@ -25,9 +26,7 @@ function make_checker(schema){
             schema[key] = typeof schema[key]
         }
     }
-    return obj => {
-        check_object(obj, schema)
-    }
+    return obj => check_object(obj, schema)
 }
 
 module.exports = make_checker
