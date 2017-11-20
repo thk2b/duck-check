@@ -8,6 +8,8 @@ ___
 * Handle null, NaN, undefined
 * Improve error messages
 * Write Documentation
+* Improve examples
+* publish to NPM
 
 ___
 
