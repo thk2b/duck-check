@@ -1,11 +1,15 @@
-##duck-check
+## duck-check
 
 duck-check is a minimalist runtime type checking utility.
 
-TODO: 
+___
+
+<b>TODO: 
 * Handle null, NaN, undefined
 * Improve error messages
 * Write Documentation
+
+___
 
 Sample usage:
     
