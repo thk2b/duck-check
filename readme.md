@@ -1,46 +1,70 @@
 ##duck-check
 
-duck-check is a minimalist runtime duck type checking utility.
+duck-check is a minimalist runtime type checking utility.
+
+TODO: 
+* Handle null, NaN, undefined
+* Improve error messages
+* Write Documentation
 
 Sample usage:
     
-    const make_checker = require('duck-check')
+    const make_checker = require('duck_checker')
 
-    const check_vector = make_checker({
-        x: 'number', /* we expect keys x, y */
-        y: 'number'  /* to have a type of 'number' */
+    const check_person = make_checker({
+        name: String,
+        age: Number
     })
+    check_person({
+        name: 'Jane Doe',
+        age: 30
+    }) // OK
+    check_person({
+        name: 'Jon Snow',
+        age: 26
+    }) // OK
+    check_person({
+        name: 10001,
+        age: 'some age'
+    }) // TypeError
 
-    const vector1 = { x: 1,  y: 2  }
-    const vector2 = { x: 23, y: 12 }
-    const circle = {x: 1, y: 111, radius: 123} /* is a vector with a radius */
-    const fake_vector = {x: '1', y: null}
+    const check_people_list = make_checker([{name: String, age: Number}])
+
+    check_people_list([
+        {
+            name: 'Jon Snow',
+            age: 26
+        },
+        {
+            name: 'Jane Doe',
+            age: 30
+        }
+    ]) // OK
+
+    check_people_list([
+        {
+            name: 'Jon Snow',
+            age: 26
+        },
+        {
+            name: 'Jane Doe',
+            age: '30'
+        }
+    ]) // TypeError
+
+    check_people_list(
+        {
+            name: 'Jon Snow',
+            age: 26
+        }
+    ) // TypeError
 
 
-    const add_vectors = (v1, v2) => {
-        const {x1, y1} = check_vector(v1)
-        const {x2, y2} = check_vector(v2)
-        
-        return ({
-            x: x1 + x2,
-            y: y1 + y2
-        })
-    }
-
-    add_vectors(vector1, vector2)     /* {x: 24, y: 14} */
-    add_vectors(vector1, fake_vector) /* TypeError */
-    add_vectors(vector1, circle)      /* {x: 2, y: 113} */
-
-
-The make_checker function takes an object called a schema. 
+The make_checker function takes an object or array called a schema. 
 The schema represents the blueprint against which to check any object. 
 A schema is a set of key:value pairs.
 
-`make_checker(schema)` returns a check function. To test any object, call `check` with an object to be checked
-
-For the test to pass:
-- The object must have all keys declared in the schema. 
-- The type of each property on the object, obtained through `typeof`, must equal (`===`) the string provided as a value in the schema. 
+`make_checker(schema)` returns a check function. To test any object, call the returned function with any object to be checked against the original schema.
 
 Caveats:
 
