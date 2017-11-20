@@ -2,6 +2,7 @@ const {
     check_type,
     check_array,
     check_object,
+    check_function,
     check,
     type_checker,
 } = require('./index')
@@ -22,15 +23,6 @@ describe('check_type', () => {
             .not.toThrow()
 
     })
-    it('should accept a type_checker function', () => {
-        const number_checker = type_checker(Number)
-        expect( () => check_type(1, number_checker))
-            .not.toThrow()
-        expect( () => check_type('a', number_checker))
-            .toThrow()
-        // TODO
-    })
-    
 })
 
 describe('check_object', () => {
@@ -67,6 +59,16 @@ describe('check_array', () => {
     })
 })
 
+describe('check_function', () => {
+    it('should accept a type_checker function', () => {
+        const number_checker = type_checker(Number)
+        expect( () => check_function(1, number_checker))
+            .not.toThrow()
+        expect( () => check_function('a', number_checker))
+            .toThrow()
+    })
+})
+
 describe('check', () => {
     it('should work with arrays', () => {
         const schema = [Number]
@@ -89,6 +91,28 @@ describe('check', () => {
         expect(() => check( 1, schema))
             .not.toThrow()
         expect(() => check('a', schema))
+            .toThrow()
+    })
+
+    it('should work with type_check functions', () => {
+        const check_number_array = [Number]
+        const schema =  {a: check_number_array}
+        expect(() => check( {a: [1,2,3]}, schema))
+            .not.toThrow()
+         expect(() => check( {a: [1,'2',3]}, schema))
+            .toThrow()
+        expect(() => check( {a: 1}, schema))
+            .toThrow()
+    })
+
+    it('should work with the Function constructor', () => {
+        const schema =  [Function]
+        const fn = () => {}
+        expect(() => check( [fn,fn], schema))
+            .not.toThrow()
+         expect(() => check( [fn, 1], schema))
+            .toThrow()
+        expect(() => check( fn, schema))
             .toThrow()
     })
     it('should handle nested objects', () => {

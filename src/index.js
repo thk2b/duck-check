@@ -1,15 +1,42 @@
 
-const is_object = val => typeof val === 'object'
+const is_object = val => (
+    typeof val === 'object'
+    && val !== null
+)
 const is_array = val => Array.isArray(val)
+const is_function = val => (
+    typeof val === 'function'
+    && !val.name /* make sure it's not the Function constructor but a function to test the value*/ 
+)
 
 function check(thing, schema){
-    if(is_array(schema)){ /* array */
-        check_arraygit (thing, schema)
-    } else if(is_object(schema)){ /* object */
-        check_object(thing, schema)
-    } else { /* anything else */
-        check_type(thing, schema)
+    try{
+        if(is_array(schema)){ /* array */
+            if(!is_array(thing)){
+                //TODO: better error message
+                throw new TypeError(
+                    `Expected an array. Got '${JSON.stringify(thing)}' instead.`
+                )
+            }
+            check_array(thing, schema)
+        } else if(is_object(schema)){ /* object */
+            if(!is_object(thing)){
+                throw new TypeError(
+                    `Expected an object. Got '${JSON.stringify(thing)}' instead.`
+                )
+            }
+            check_object(thing, schema)
+        } else if(is_function(schema)){
+            check_function(thing, schema)
+        } else { /* anything else */
+            check_type(thing, schema)
+        }
+    } catch(e) {
+        throw TypeError(
+            `\nExpected value to match '${JSON.stringify(schema)}' but got error: \n` + e.message
+        )
     }
+
 }
 
 /**
@@ -47,21 +74,27 @@ function check_array(arr, schema){
     }
 }
 
+function check_function(value, fn){
+    try{
+        fn(value)
+    } catch(e){
+        throw new TypeError(
+            `Expected value '${value}' to pass through a test function. An error occured: \n` + e.message 
+        )
+    }
+}
+
 /**
  * Checks whether the type of value equals type
  * @param {*} value 
  * @param {*} type - Constructor 
  */
 function check_type(value, type){
-    if( !type.name ){
-        if(typeof type === 'function'){ /* type is a custom type checker */
-            type(value)
-        } else {
-            throw new Error(`Invalid schema: key'${type}' is not a valid type.`)
-        }
+    if( !type.name ){        
+        throw new Error(`Invalid schema: key '${type}' is not a valid type.`)
     } else if(typeof value !== type.name.toLowerCase()){
         throw new Error(
-            `Expected value of type '${type}'. Got '${value}' of type '${typeof value}.`
+            `Expected value of type '${type.name}'. Got '${value}' of type '${typeof value}'.`
         )
     }
 }
@@ -76,5 +109,6 @@ module.exports = {
     check,
     check_array,
     check_object,
+    check_function,
     check_type
 }
