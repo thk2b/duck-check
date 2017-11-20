@@ -1,4 +1,4 @@
-const check_object = (obj, schema) => {
+function check_object(obj, schema){
     for(let key in schema){
         if(typeof schema[key] === 'object' && typeof schema[key] !== null){
             check_object(obj[key], schema[key])
@@ -23,13 +23,44 @@ const check_object = (obj, schema) => {
     return obj
 }
 
-function make_checker(schema){
-    for(let key in schema){
-        if(typeof key !== 'string'){
-            schema[key] = typeof schema[key]
+function check_array(arr, schema){
+    if(schema.length === 1){ /* all elements have the same type */
+        if(arr.length === 0){
+            throw new TypeError(
+                `Expected array elements to have type '${schema[0]}'. Got an empty array instead`
+            )
+        } else {
+            arr.forEach( el => {
+                if(typeof el !== schema[0]){
+                    throw new TypeError(
+                        `Expected array element to have type '${schema[0]}'. Got '${el}' of type ${typeof el} instead`
+                    )
+                }
+            })
+        }
+    } else if(schema.length > 1){ /* positional array of diffeernt types */
+        arr.forEach( (el, i) => {
+            if(typeof el !== schema[i]){
+                throw new TypeError(
+                    `Expected array element to have type '${schema[i]}'. Got '${el}' of type ${typeof el} instead`
+                )
+            }
+        })
+    } else { /* array of any */
+        if(!Array.isArray(arr)){
+            throw new TypeError(
+                `Expected an array. Got '${arr}' of type '${typeof arr} instead'`
+            )
         }
     }
-    return obj => check_object(obj, schema)
+} 
+
+function make_checker(schema){
+    if(Array.isArray(schema)){
+        return arr => check_object(arr, schema)
+    } else {
+        return obj => check_object(obj, schema)
+    }
 }
 
 module.exports = make_checker
