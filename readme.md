@@ -4,7 +4,7 @@ duck-check is a minimalist runtime type checking utility.
 
 ___
 
-<b>TODO: 
+<b>TODO:</b>
 * Handle null, NaN, undefined
 * Improve error messages
 * Write Documentation
