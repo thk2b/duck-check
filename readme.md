@@ -1,15 +1,24 @@
 ## duck-check
 
-duck-check is a minimalist runtime type checking utility.
+A minimalist runtime type checking utility.
+This project is work-in-progress. 
 
 ___
 
 <b>TODO:</b>
-* Handle null, NaN, undefined
-* Improve error messages
-* Write Documentation
-* Improve examples
-* publish to NPM
+
+core:
+- [ ] Test with `null`, `NaN`, `undefined`
+- [ ] Handle `null`, `NaN`, `undefined`
+
+printing:
+- [ ] Improve error messages
+- [ ] Print schema 
+
+share:
+- [ ] Write Documentation
+- [ ] Improve examples
+- [ ] publish to NPM
 
 ___
 
