@@ -10,33 +10,26 @@ const is_function = val => (
 )
 
 function check(duck, schema){
-    try{
-        if(is_array(schema)){ /* array */
-            if(!is_array(duck)){
-                //TODO: better error message
-                throw new TypeError(
-                    `Expected an array. Got '${JSON.stringify(duck)}' instead.`
-                )
-            }
-            check_array(duck, schema)
-        } else if(is_object(schema)){ /* object */
-            if(!is_object(duck)){
-                throw new TypeError(
-                    `Expected an object. Got '${JSON.stringify(duck)}' instead.`
-                )
-            }
-            check_object(duck, schema)
-        } else if(is_function(schema)){
-            check_function(duck, schema)
-        } else { /* anyduck else */
-            check_type(duck, schema)
+    if(is_array(schema)){ /* array */
+        if(!is_array(duck)){
+            //TODO: better error message
+            throw new TypeError(
+                `Expected an array. Got '${JSON.stringify(duck)}' instead.`
+            )
         }
-    } catch(e) {
-        throw TypeError(
-            `\nExpected value to match '${JSON.stringify(schema)}' but got error: \n` + e.message
-        )
+        check_array(duck, schema)
+    } else if(is_object(schema)){ /* object */
+        if(!is_object(duck)){
+            throw new TypeError(
+                `Expected an object. Got '${JSON.stringify(duck)}' instead.`
+            )
+        }
+        check_object(duck, schema)
+    } else if(is_function(schema)){
+        check_function(duck, schema)
+    } else { /* anyduck else */
+        check_type(duck, schema)
     }
-
 }
 
 /**
@@ -44,6 +37,7 @@ function check(duck, schema){
  * @param {Object} obj
  * @param {*} schema 
  */
+
 function check_object(obj, schema){
     for(let key in schema){
         const val = obj[key]
@@ -94,29 +88,29 @@ function check_type(value, type){
         throw new Error(`Invalid schema: key '${type}' is not a valid type.`)
     } else if(typeof value !== type.name.toLowerCase()){
         throw new Error(
-            `Expected value of type '${type.name}'. Got '${value}' of type '${typeof value}'.`
+            `Expected '${type.name}'. Got '${value}' ${value?` of type '${typeof value}'`:''}`
         )
     }
 }
 
+function print_error(console, duck, schema){
+    console.error(`\n>| Expected\n`)
+    console.dir(schema)
+    console.error(`\n>| But got\n`)
+    console.dir(duck)
+}
 
 function type_checker(schema){
     return duck => {
         try{
             check(duck, schema)
         } catch(e) {
-            setTimeout( () => {
-                console.error(`\n| Expected \n`)
-                console.dir(schema)
-                console.error(`\n| But got  \n`)
-                console.dir(duck)
-            }, 0)
-            console.error(
-                e
-            )
+            //TODO: switch e.type
+            setTimeout( 
+                () => print_error(console, duck, schema)
+            , 0)
+            console.error(e)
         }
-
-
     }
 }
 
