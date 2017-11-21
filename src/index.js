@@ -102,7 +102,20 @@ function check_type(value, type){
 
 function type_checker(schema){
     return duck => {
-        check(duck, schema)
+        try{
+            check(duck, schema)
+        } catch(e) {
+            setTimeout( () => {
+                console.error(`\n| Expected \n`)
+                console.dir(schema)
+                console.error(`\n| But got  \n`)
+                console.dir(duck)
+            }, 0)
+            console.error(
+                e
+            )
+        }
+
 
     }
 }
