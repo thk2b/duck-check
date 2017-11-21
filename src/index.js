@@ -9,8 +9,9 @@ const is_function = val => (
     && !val.name /* make sure it's not the Function constructor but a function to test the value*/ 
 )
 
+
 function check(thing, schema){
-    try{
+    try {
         if(is_array(schema)){ /* array */
             if(!is_array(thing)){
                 //TODO: better error message
@@ -38,6 +39,22 @@ function check(thing, schema){
     }
 
 }
+
+/**
+ * Checks whether the type of value equals type
+ * @param {*} value 
+ * @param {*} type - Constructor 
+ */
+function check_type(value, type){
+    if( !type.name ){        
+        throw new Error(`Invalid schema: key '${type}' is not a valid type.`)
+    } else if(typeof value !== type.name.toLowerCase()){
+        throw new Error(
+            `Expected value of type '${type.name}'. Got '${value}' of type '${typeof value}'.`
+        )
+    }
+}
+
 
 /**
  * Check the type of all keys on the object
@@ -83,22 +100,6 @@ function check_function(value, fn){
         )
     }
 }
-
-/**
- * Checks whether the type of value equals type
- * @param {*} value 
- * @param {*} type - Constructor 
- */
-function check_type(value, type){
-    if( !type.name ){        
-        throw new Error(`Invalid schema: key '${type}' is not a valid type.`)
-    } else if(typeof value !== type.name.toLowerCase()){
-        throw new Error(
-            `Expected value of type '${type.name}'. Got '${value}' of type '${typeof value}'.`
-        )
-    }
-}
-
 
 function type_checker(schema){
     return thing => check(thing, schema)

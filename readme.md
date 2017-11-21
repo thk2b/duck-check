@@ -13,6 +13,7 @@ ___
 - [ ] Test with `null`, `NaN`, `undefined`
 - [ ] Handle `null`, `NaN`, `undefined`
 - [ ] Consider making `check` return a boolean and error object instead of raising errors 
+- [ ] Support checking for user-defined classes: declare constructor in schema, use `instanceof`
 - [ ] Check performance
 
 🎨 printing:
