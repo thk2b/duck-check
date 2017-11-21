@@ -9,37 +9,12 @@ const is_anonymous_function = val => (
     && !val.name /* make sure it's not the Function constructor but a function to test the value */ 
 )
 
-<<<<<<< HEAD
-
-function check(thing, schema){
-    try {
-        if(is_array(schema)){ /* array */
-            if(!is_array(thing)){
-                //TODO: better error message
-                throw new TypeError(
-                    `Expected an array. Got '${JSON.stringify(thing)}' instead.`
-                )
-            }
-            check_array(thing, schema)
-        } else if(is_object(schema)){ /* object */
-            if(!is_object(thing)){
-                throw new TypeError(
-                    `Expected an object. Got '${JSON.stringify(thing)}' instead.`
-                )
-            }
-            check_object(thing, schema)
-        } else if(is_function(schema)){
-            check_function(thing, schema)
-        } else { /* anything else */
-            check_type(thing, schema)
-=======
 function check(duck, schema){
     if(is_array(schema)){ /* array */
         if(!is_array(duck)){
             throw new TypeError(
                 `Expected array. Got '${ typeof duck}'.`
             )
->>>>>>> pretty-console
         }
         check_array(duck, schema)
     } else if(is_object(schema)){ /* object */
@@ -127,7 +102,11 @@ function check_array(arr, schema){
 }
 
 function check_function(value, fn){
-    fn(value)
+    try {
+        fn(value)
+    } catch (e){
+        {}
+    }
 }
 
 function print_error(console, duck, schema){
