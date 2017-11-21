@@ -9,27 +9,27 @@ const is_function = val => (
     && !val.name /* make sure it's not the Function constructor but a function to test the value*/ 
 )
 
-function check(thing, schema){
+function check(duck, schema){
     try{
         if(is_array(schema)){ /* array */
-            if(!is_array(thing)){
+            if(!is_array(duck)){
                 //TODO: better error message
                 throw new TypeError(
-                    `Expected an array. Got '${JSON.stringify(thing)}' instead.`
+                    `Expected an array. Got '${JSON.stringify(duck)}' instead.`
                 )
             }
-            check_array(thing, schema)
+            check_array(duck, schema)
         } else if(is_object(schema)){ /* object */
-            if(!is_object(thing)){
+            if(!is_object(duck)){
                 throw new TypeError(
-                    `Expected an object. Got '${JSON.stringify(thing)}' instead.`
+                    `Expected an object. Got '${JSON.stringify(duck)}' instead.`
                 )
             }
-            check_object(thing, schema)
+            check_object(duck, schema)
         } else if(is_function(schema)){
-            check_function(thing, schema)
-        } else { /* anything else */
-            check_type(thing, schema)
+            check_function(duck, schema)
+        } else { /* anyduck else */
+            check_type(duck, schema)
         }
     } catch(e) {
         throw TypeError(
@@ -101,7 +101,10 @@ function check_type(value, type){
 
 
 function type_checker(schema){
-    return thing => check(thing, schema)
+    return duck => {
+        check(duck, schema)
+
+    }
 }
 
 module.exports = {
