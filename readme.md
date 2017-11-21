@@ -24,57 +24,58 @@ ___
 ___
 
 Sample usage:
-    
-    const make_checker = require('duck_checker')
 
-    const check_person = make_checker({
-        name: String,
-        age: Number
-    })
-    check_person({
-        name: 'Jane Doe',
-        age: 30
-    }) // OK
-    check_person({
+```js
+const make_checker = require('duck_checker')
+
+const check_person = make_checker({
+    name: String,
+    age: Number
+})
+check_person({
+    name: 'Jane Doe',
+    age: 30
+}) // OK
+check_person({
+    name: 'Jon Snow',
+    age: 26
+}) // OK
+check_person({
+    name: 10001,
+    age: 'some age'
+}) // TypeError
+
+const check_people_list = make_checker([{name: String, age: Number}])
+
+check_people_list([
+    {
         name: 'Jon Snow',
         age: 26
-    }) // OK
-    check_person({
-        name: 10001,
-        age: 'some age'
-    }) // TypeError
+    },
+    {
+        name: 'Jane Doe',
+        age: 30
+    }
+]) // OK
 
-    const check_people_list = make_checker([{name: String, age: Number}])
+check_people_list([
+    {
+        name: 'Jon Snow',
+        age: 26
+    },
+    {
+        name: 'Jane Doe',
+        age: '30'
+    }
+]) // TypeError
 
-    check_people_list([
-        {
-            name: 'Jon Snow',
-            age: 26
-        },
-        {
-            name: 'Jane Doe',
-            age: 30
-        }
-    ]) // OK
-
-    check_people_list([
-        {
-            name: 'Jon Snow',
-            age: 26
-        },
-        {
-            name: 'Jane Doe',
-            age: '30'
-        }
-    ]) // TypeError
-
-    check_people_list(
-        {
-            name: 'Jon Snow',
-            age: 26
-        }
-    ) // TypeError
-
+check_people_list(
+    {
+        name: 'Jon Snow',
+        age: 26
+    }
+) // TypeError
+```
 
 The make_checker function takes an object or array called a schema. 
 The schema represents the blueprint against which to check any object. 
