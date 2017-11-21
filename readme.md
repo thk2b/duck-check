@@ -9,6 +9,7 @@ ___
 <b>TODO:</b>
 
 🚧 core:
+- [ ] Simplify public API: implement `check(schema)(duck)` 
 - [ ] Test with `null`, `NaN`, `undefined`
 - [ ] Handle `null`, `NaN`, `undefined`
 - [ ] Consider making `check` return a boolean and error object instead of raising errors 
