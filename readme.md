@@ -1,21 +1,22 @@
 ## duck-check
 
 A minimalist runtime type checking utility.
-This project is work-in-progress. 
+
+🚧 This project is work-in-progress 🚧
 
 ___
 
 <b>TODO:</b>
 
-core:
+🚧 core:
 - [ ] Test with `null`, `NaN`, `undefined`
 - [ ] Handle `null`, `NaN`, `undefined`
 
-printing:
+🎨 printing:
 - [ ] Improve error messages
 - [ ] Print schema 
 
-share:
+🌐 share:
 - [ ] Write Documentation
 - [ ] Improve examples
 - [ ] publish to NPM
