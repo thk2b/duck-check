@@ -130,8 +130,6 @@ function check_function(value, fn){
     fn(value)
 }
 
-<<<<<<< HEAD
-=======
 function print_error(console, duck, schema){
     console.error(`\n>| Expected\n`)
     console.dir(schema)
@@ -139,7 +137,6 @@ function print_error(console, duck, schema){
     console.dir(duck)
 }
 
->>>>>>> pretty-console
 function type_checker(schema){
     return duck => {
         try{
