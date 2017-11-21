@@ -12,6 +12,7 @@ ___
 - [ ] Test with `null`, `NaN`, `undefined`
 - [ ] Handle `null`, `NaN`, `undefined`
 - [ ] Consider making `check` return a boolean and error object instead of raising errors 
+- [ ] Check performance
 
 🎨 printing:
 - [ ] Improve error messages
