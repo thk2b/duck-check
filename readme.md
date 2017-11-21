@@ -17,7 +17,7 @@ ___
 - [ ] Check performance
 
 🎨 printing:
-- [ ] Improve error messages
+- [x] Improve error messages
 - [ ] Print schema 
 
 🌐 share:
