@@ -10,5 +10,7 @@ const type_checker = require('./index')
 // check_matrix([[1,2], ['a',4]])
 // check_matrix([[1,2], 3,4])
 
-const check = type_checker({a: Number, b: {c: String}})
-check({a: 1, b: {d: 'a'}})
+const Vector = type_checker(Number)
+
+const check = type_checker({a: Vector, b: [ String, String ]})
+check({a: 'a', b: ['a', '1']})
