@@ -11,6 +11,7 @@ ___
 🚧 core:
 - [ ] Test with `null`, `NaN`, `undefined`
 - [ ] Handle `null`, `NaN`, `undefined`
+- [ ] Consider making `check` return a boolean and error object instead of raising errors 
 
 🎨 printing:
 - [ ] Improve error messages
