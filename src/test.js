@@ -171,7 +171,7 @@ describe('type_checker', () => {
         const checker = type_checker({a: Number, b: Number})
         expect(() => checker({a: 1, b: 2}))
             .not.toThrow()
-        expect(() => checker({a: 'a', b: 2}))
+        expect(() => checker({b: 'a', b: 2}))
             .toThrow()
     })
 })
