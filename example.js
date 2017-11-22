@@ -10,7 +10,9 @@ const check = require('./index')
 // check_matrix([[1,2], ['a',4]])
 // check_matrix([[1,2], 3,4])
 
-const Vector = check(Number)
+// const Vector = check(Number)
 
-const checker = check({a: Vector, b: [ String, String ]})
-checker({a: 'a', b: ['a', '1']})
+// const checker = check({a: Vector, b: [ String, String ]})
+// checker({a: 'a', b: ['a', '1']})
+
+check(Number)(NaN)

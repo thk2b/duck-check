@@ -10,9 +10,9 @@ const is_anonymous_function = val => (
 )
 
 function print_error(console, duck, schema){
-    console.error(`\n>| Expected\n`)
+    console.error(`\n| Expected\n`)
     console.dir(schema)
-    console.error(`\n>| But got ${duck? '': 'undefined'}\n`)
+    console.error(`\n| But got \n`)
     console.dir(duck)
 }
 
@@ -24,6 +24,7 @@ function check(schema){
         try {
             _check(schema, duck)
         } catch (e) {
+            print_error(console, duck, schema)
             throw e
         }
     }
@@ -57,11 +58,17 @@ function _check(schema, duck){
  * @param {*} type - Constructor 
  */
 function check_type(type, value){
-    // TODO: remove after implementing validate_schema     
     if( !type.name ){ 
+        // TODO: remove after implementing validate_schema     
         throw new TypeError(`Invalid schema key: '${type}' is not a valid type.`)
-    } else if(typeof value !== type.name.toLowerCase()){
-        throw new TypeError(`Expected '${type.name}'. Got '${value}' of type '${typeof value}'`)
+    } else if (
+        typeof value === 'number' && isNaN(value) || 
+        typeof value !== type.name.toLowerCase()
+    ){
+        const got = value
+            ?`Got '${value}' of type '${typeof value}'` 
+            :`Got '${value}'`
+        throw new TypeError(`Expected '${type.name}'. ` + got)
     }
 }
 
