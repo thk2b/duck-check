@@ -17,6 +17,7 @@ ___
 🎨 printing:
 - [x] Improve error messages
 - [ ] Print schema 
+- [ ] Batch errors in array and object checkers
 
 🌐 share:
 - [ ] Write Documentation
