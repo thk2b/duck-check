@@ -87,7 +87,6 @@ function check_type(type, value){
  * @param {Object} obj
  * @param {Object} schema 
  */
-
 function check_object(schema, obj){
     try {
         for(let key in schema){
