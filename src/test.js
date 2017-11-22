@@ -160,6 +160,36 @@ describe('check', () => {
         expect(() => _check(schema, [{a: 1, b: 'a', c: [{z: true}]}]))
             .toThrow()
     })
+    it('should handle falsy values, arrays, objects, functions', () => {
+        const str_array_check = check([String])
+        const validate = check({
+            a: [Number, String, Function],
+            b: {
+                c: [str_array_check]
+            }
+        })
+
+        expect(() => validate({
+            a: [1, 'a', String],
+            b: {
+                c: [['a', 'b'], ['c']]
+            }
+        })).not.toThrow()
+        
+        expect(() => validate({
+            a: [1, 'a', null],
+            b: {
+                c: [['a', 'b'], ['c']]
+            }
+        })).toThrow()
+
+        expect(() => validate({
+            a: [1, 'a', String],
+            b: {
+                c: ['a', 'b']
+            }
+        })).toThrow()
+    })
 })
 
 describe('checking with falsy values', () => {
