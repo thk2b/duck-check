@@ -11,7 +11,7 @@ const check = require('./index')
 // check_matrix([[1,2], 3,4])
 
 // const Vector = check(Number)
-
+ 
 // const checker = check({a: Vector, b: [ String, String ]})
 // checker({a: 'a', b: ['a', '1']})
 

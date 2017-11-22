@@ -34,6 +34,21 @@ function check(schema){
         }
     }
 }
+
+function get_type(schema){
+    
+}
+    
+const checkers = {
+    array: duck => {
+        duck.forEach(el, i )
+    },
+    object: duck => 
+}
+
+    
+
+
 /**
  * Private function. 
  * Examines the schema and runs the appropriate checks
@@ -41,6 +56,15 @@ function check(schema){
  * @param {*} duck 
  */
 function _check(schema, duck){
+    const schema_type = get_type(schema)
+    const duck_type = get_type(duck)
+    if(schema_type !== duck_type){
+        throw new TypeError(
+            `Expected ${ schema_type }. Got '${ duck_type }'.`
+        )
+    }
+    checkers[get_type(schema)](duck)
+
     if(is_array(schema)){ /* array */
         if(!is_array(duck)){
             throw new TypeError(
