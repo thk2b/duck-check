@@ -48,7 +48,6 @@ validate_point({
     some_other_key: 'some_other value'
 })
 
-
 check([ Number ])([1,2,3])
 check([ Number ])([1,2,'a']) 
 /* TypeError: Invalid element in array: Expected 'number'. Got 'string'. */
@@ -71,7 +70,6 @@ check([[ Number, [ String ]]])([
 check([ validate_point ])([{ x: 1, y: 1 }, { x: 10, y: 10 }])
 check([ validate_point ])([{ x: 1, y: 1 }, { x: 10, xyz: 10 }]) 
 /* TypeError: Invalid element in array: Error in object: Expected key 'y' but was undefined */
-
 
 const validate = check({ name: String, data: { x: Number, y: Number }})
 
