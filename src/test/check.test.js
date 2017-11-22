@@ -4,7 +4,7 @@ const {
     check_function,
     check,
     _check
-} = require('./check')
+} = require('../check')
 
 
 describe('public check', () => {

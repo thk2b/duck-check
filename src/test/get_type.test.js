@@ -1,7 +1,7 @@
 const {
     get_type,
     is_type,
-} = require('./get_type')
+} = require('../get_type')
 
 describe('is_type', () => {
     it('should find array', () => {

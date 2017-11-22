@@ -11,19 +11,21 @@ const is_type = {
     NaN: duck => isNaN(duck),
 }
 
+const types = [ /* order is crutial: ie. must check null before object */
+    'array', 
+    'null', 
+    'object', 
+    'number', 
+    'string',
+    'boolean', 
+    'function', 
+    'anonymous_function', 
+    'undefined', 
+    'NaN'
+]
+
 function get_type(duck){
-    const type = [
-        'array', 
-        'null', 
-        'object', 
-        'number', 
-        'string',
-        'boolean', 
-        'function', 
-        'anonymous_function', 
-        'undefined', 
-        'NaN'
-    ].find( type => is_type[type](duck))
+    const type = types.find( type => is_type[type](duck))
     if(!type){
         throw new Error(`Cannot find type of '${duck}'`)
     }
