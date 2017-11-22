@@ -26,7 +26,7 @@ ___
 🏆 possible improvments: 
 - [ ] Check (and improve) performance 
 - [ ] Consider making `check` return a boolean and error object instead of raising errors. 
-Usage: `if(check(Number)(1){...}`
+Usage: `if(check(Number)(1)){...}`
 ___
 
 Sample usage:
