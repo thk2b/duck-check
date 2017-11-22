@@ -9,15 +9,12 @@ ___
 <b>TODO:</b>
 
 🚧 core:
-- [x] Simplify public API: implement `check(schema)(duck)` 
-- [x] Handle `null`, `NaN`, `undefined`
 - [ ] Write `validate_schema`
 
 
 🎨 printing:
 - [x] Improve error messages
 - [ ] Print schema 
-- [ ] Batch errors in array and object checkers
 
 🌐 share:
 - [ ] Write Documentation
@@ -28,6 +25,7 @@ ___
 - [ ] Check (and improve) performance 
 - [ ] Consider making `check` return a boolean and error object instead of raising errors. 
 Usage: `if(check(Number)(1)){...}`
+- [ ] Batch errors in array and object checkers: instead of throwing after first error is found, run through the rest of the array / object and find all errors.
 ___
 
 Usage:
