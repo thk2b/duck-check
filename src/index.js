@@ -1,4 +1,3 @@
-
 const is_object = val => (
     typeof val === 'object'
     && val !== null
@@ -18,8 +17,14 @@ function print_error(console, duck, schema){
 
 /**
  * Public facing curried function 
+ * @param {*} schema - Schema declaration 
+ * @returns {Function} - check function
  */
 function check(schema){
+    /**
+     * Check function
+     * @param {*} duck – Any object to be checked against the schema
+     */
     return duck => {
         try {
             _check(schema, duck)
@@ -29,7 +34,12 @@ function check(schema){
         }
     }
 }
-
+/**
+ * Private function. 
+ * Examines the schema and runs the appropriate checks
+ * @param {*} schema 
+ * @param {*} duck 
+ */
 function _check(schema, duck){
     if(is_array(schema)){ /* array */
         if(!is_array(duck)){
@@ -53,8 +63,8 @@ function _check(schema, duck){
 }
 
 /**
- * Checks whether the type of value equals type
- * @param {*} value 
+ * Checks the type of a base value
+ * @param {*} value - Base value: not an array or object literal
  * @param {*} type - Constructor 
  */
 function check_type(type, value){
@@ -73,9 +83,9 @@ function check_type(type, value){
 }
 
 /**
- * Check the type of all keys on the object
+ * Checks the existance of all keys declared on the schema and their type
  * @param {Object} obj
- * @param {*} schema 
+ * @param {Object} schema 
  */
 
 function check_object(schema, obj){
@@ -95,6 +105,11 @@ function check_object(schema, obj){
     }
 }
 
+/**
+ * Checks array elements against an array schema or positional array schema. 
+ * @param {Array} schema 
+ * @param {Array} arr 
+ */
 function check_array(schema, arr){
     try {
         if(schema.length === 1){ /* all elements are of one type */
@@ -115,7 +130,11 @@ function check_array(schema, arr){
         throw new TypeError('Invalid element in array: ' + e.message)
     }
 }
-
+/**
+ * Checks if the value passes the check function provided. 
+ * @param {Function} fn - the result of a previous `check(schema) call`
+ * @param {*} value
+ */
 function check_function(fn, value){
     try {
         fn(value)
@@ -125,8 +144,8 @@ function check_function(fn, value){
 }
 
 module.exports = {
-    check,
-    _check,
+    check, /* only public function */
+    _check, /* export for testing */
     check_array,
     check_object,
     check_function,
