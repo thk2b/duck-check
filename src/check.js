@@ -1,15 +1,5 @@
 const { get_type } = require('./get_type')
 
-const is_object = val => (
-    typeof val === 'object'
-    && val !== null
-)
-const is_array = val => Array.isArray(val)
-const is_anonymous_function = val => (
-    typeof val === 'function'
-    && !val.name /* make sure it's not the Function constructor but a function to test the value */ 
-)
-
 function print_error(console, duck, schema){
     console.error(`\n| Expected\n`)
     console.dir(schema)
