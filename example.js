@@ -2,12 +2,12 @@
 const check = require('./src')
 
 check({ x: Number, y: Number })({ x: 10, y: 15 })
-check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
+// check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
 /* TypeError: Error in object: Expected 'number'. Got 'string'. */
 
 const validate_point = check({ x: Number, y: Number })
 
-validate_point({ x: 10, oups: 15 }) 
+// validate_point({ x: 10, oups: 15 }) 
 /* TypeError: Error in object: Expected key 'y' but was undefined.. */
 
 validate_point({
@@ -18,14 +18,14 @@ validate_point({
 
 
 check([ Number ])([1,2,3])
-check([ Number ])([1,2,'a']) 
+check([[Number]])([[1,'2','a'],[1,2,'a']]) 
 /* TypeError: Invalid element in array: Expected 'number'. Got 'string'. */
 
-check([ Number ])(1) 
+// check([ Number ])(1) 
 /* TypeError: Expected 'array'. Got 'number'. */
 
 check([ Number, String ])([1, '1'])
-check([ Number, String ])([1, 456, '1']) 
+// check([ Number, String ])([1, 456, '1']) 
 /* TypeError: Invalid element in array: Expected positional array of length '2'. Got array of length '3'. */
 
 check([[ Number, [ String ]]])([ /* array of (number and array of string) */

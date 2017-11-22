@@ -58,7 +58,7 @@ function _check(schema, duck){
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
             throw new TypeError(
-                `Expected '${ schema_type }'. Got '${ duck_type }'.`
+                `Expected ${ schema_type } – Got ${ duck_type.replace('_', ' ') } '${duck}'`
             )
         }
     }
@@ -107,23 +107,39 @@ function check_object(schema, obj){
  * @param {Array} arr 
  */
 function check_array(schema, arr){
-    try {
-        if(schema.length === 1){ /* all elements are of one type */
-            arr.forEach( el => {
+    let errors = []
+
+    if(schema.length === 1){ /* all elements are of one type */
+        arr.forEach( el => {
+            try {
                 _check(schema[0], el)    
-            })
-        } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
-            if(schema.length !== arr.length){
-                throw new TypeError(
-                    `Expected positional array of length '${schema.length}'. Got array of length '${arr.length}'.`
-                )
+            } catch (e) {
+                errors.push(e)
             }
-            arr.forEach( (el, i) => {
-                _check(schema[i], el)
-            })
+        })
+    } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
+        if(schema.length !== arr.length){
+            throw new TypeError(
+                `Expected positional array of length '${schema.length}'. Got array of length '${arr.length}'`
+            )
         }
-    } catch (e) {
-        throw new TypeError('Invalid element in array: ' + e.message)
+        arr.forEach( (el, i) => {
+            try {
+                _check(schema[i], el)
+            } catch (e) {
+                errors.push(e)
+            }
+        })
+    }
+
+    const indent = str => str.replace('\n', '\n\t')
+    if(errors.length === 1){
+        throw new TypeError(`Invalid element in array ${JSON.stringify(arr)}: ${(indent(errors[0].message))}`)
+    } else if(errors.length > 1){
+        const separator = '\n\t |'
+        const messages = errors.map( (e, i) => ` ${i+1} | ${e.message}` )
+        const message = `${errors.length} invalid elements in array ${JSON.stringify(arr)}:${separator}${indent(messages.join(separator))}`
+        throw new TypeError(message)
     }
 }
 /**
