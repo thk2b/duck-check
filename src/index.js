@@ -9,25 +9,45 @@ const is_anonymous_function = val => (
     && !val.name /* make sure it's not the Function constructor but a function to test the value */ 
 )
 
-function check(duck, schema){
+function print_error(console, duck, schema){
+    console.error(`\n>| Expected\n`)
+    console.dir(schema)
+    console.error(`\n>| But got ${duck? '': 'undefined'}\n`)
+    console.dir(duck)
+}
+
+/**
+ * Public facing curried function 
+ */
+function check(schema){
+    return duck => {
+        try {
+            _check(schema, duck)
+        } catch (e) {
+            throw e
+        }
+    }
+}
+
+function _check(schema, duck){
     if(is_array(schema)){ /* array */
         if(!is_array(duck)){
             throw new TypeError(
                 `Expected array. Got '${ typeof duck}'.`
             )
         }
-        check_array(duck, schema)
+        check_array(schema, duck)
     } else if(is_object(schema)){ /* object */
         if(!is_object(duck)){
             throw new TypeError(
                 `Expected object. Got '${ typeof duck}'.`
             )
         }
-        check_object(duck, schema)
+        check_object(schema, duck)
     } else if(is_anonymous_function(schema)){
-        check_function(duck, schema)
+        check_function(schema, duck)
     } else { /* anyduck else */
-        check_type(duck, schema)
+        check_type(schema, duck)
     }
 }
 
@@ -36,7 +56,7 @@ function check(duck, schema){
  * @param {*} value 
  * @param {*} type - Constructor 
  */
-function check_type(value, type){
+function check_type(type, value){
     // TODO: remove after implementing validate_schema     
     if( !type.name ){ 
         throw new TypeError(`Invalid schema key: '${type}' is not a valid type.`)
@@ -46,45 +66,33 @@ function check_type(value, type){
 }
 
 /**
- * Checks whether the type of value equals type
- * @param {*} value 
- * @param {*} type - Constructor 
- */
-function check_type(value, type){
-    if( !type.name ){        
-        throw new Error(`Invalid schema: key '${type}' is not a valid type.`)
-    } else if(typeof value !== type.name.toLowerCase()){
-        throw new Error(
-            `Expected value of type '${type.name}'. Got '${value}' of type '${typeof value}'.`
-        )
-    }
-}
-
-
-/**
  * Check the type of all keys on the object
  * @param {Object} obj
  * @param {*} schema 
  */
 
-function check_object(obj, schema){
-    for(let key in schema){
-        const val = obj[key]
-        const type = schema[key]
-        if(val === 'undefined'){
-            throw new TypeError(
-                `Expected key '${key}' of type '${type}'.`
-            )
+function check_object(schema, obj){
+    try {
+        for(let key in schema){
+            const val = obj[key]
+            const type = schema[key]
+            if(val === 'undefined'){
+                throw new TypeError(
+                    `Expected key '${key}' of type '${type}'.`
+                )
+            }
+            _check(schema[key], obj[key])
         }
-        check(obj[key], schema[key])
+    } catch (e) {
+        throw new TypeError('Error in object: ' + e.message)
     }
 }
 
-function check_array(arr, schema){
+function check_array(schema, arr){
     try {
         if(schema.length === 1){ /* all elements are of one type */
             arr.forEach( el => {
-                check(el, schema[0])    
+                _check(schema[0], el)    
             })
         } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
             if(schema.length !== arr.length){
@@ -93,7 +101,7 @@ function check_array(arr, schema){
                 )
             }
             arr.forEach( (el, i) => {
-                check(el, schema[i])    
+                _check(schema[i], el)
             })
         }
     } catch (e) {
@@ -101,35 +109,17 @@ function check_array(arr, schema){
     }
 }
 
-function check_function(value, fn){
+function check_function(fn, value){
     try {
         fn(value)
     } catch (e){
-        {}
-    }
-}
-
-function print_error(console, duck, schema){
-    console.error(`\n>| Expected\n`)
-    console.dir(schema)
-    console.error(`\n>| But got ${duck? '': 'undefined'}\n`)
-    console.dir(duck)
-}
-
-function type_checker(schema){
-    return duck => {
-        try{
-            check(duck, schema)
-        } catch(e) {
-            print_error(console, duck, schema)
-            throw e
-        }
+        throw e
     }
 }
 
 module.exports = {
-    type_checker,
     check,
+    _check,
     check_array,
     check_object,
     check_function,

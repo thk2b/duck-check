@@ -4,22 +4,22 @@ const {
     check_object,
     check_function,
     check,
-    type_checker,
+    _check
 } = require('./index')
 
-describe('check_type', () => {
+describe('public check', () => {
     it('should accept a constructor', () => {
-        expect( () => check_type(1, Number) )
+        expect( () => check_type(Number, 1) )
             .not.toThrow()
-        expect( () => check_type(undefined, Number) )
+        expect( () => check_type(Number, undefined) )
             .toThrow()
 
-        expect( () => check_type('1', String) )
+        expect( () => check_type(String, '1') )
             .not.toThrow()
-        expect( () => check_type(1, String) )
+        expect( () => check_type(String, 1) )
             .toThrow()
 
-        expect( () => check_type(() => {}, Function) )
+        expect( () => check_type(Function, () => {}) )
             .not.toThrow()
 
     })
@@ -29,9 +29,9 @@ describe('check_object', () => {
     it('should verify an object', () => {
         const schema = {a: Number}
 
-        expect(() => check_object({a: 1}, schema))
+        expect(() => check_object(schema, {a: 1}))
             .not.toThrow()
-        expect(() => check_object({a: 'a'}, schema))
+        expect(() => check_object(schema, {a: 'a'}))
             .toThrow()
     })
 })
@@ -40,31 +40,31 @@ describe('check_array', () => {
     it('should verify an array against an array of one type', () => {
         const schema = [Number]
 
-        expect(() => check_array([1,2,3], schema))
+        expect(() => check_array(schema, [1,2,3]))
             .not.toThrow()
-        expect(() => check_array([1,2,'a'], schema))
+        expect(() => check_array(schema, [1,2,'a']))
             .toThrow()
     })
     it('should verify an array against a positional array', () => {
         const schema = [String, Number]
 
-        expect(() => check_array(['a',2], schema))
+        expect(() => check_array(schema, ['a',2]))
             .not.toThrow()
-        expect(() => check_array([1,2], schema))
+        expect(() => check_array(schema, [1,2]))
             .toThrow()
-        expect(() => check_array(['a',2,3], schema))
+        expect(() => check_array(schema, ['a',2,3]))
             .toThrow()
-        expect(() => check_array(['a'], schema))
+        expect(() => check_array(schema, ['a']))
             .toThrow()
     })
 })
 
 describe('check_function', () => {
-    it('should accept a type_checker function', () => {
-        const number_checker = type_checker(Number)
-        expect( () => check_function(1, number_checker))
+    it('should accept a type checker function', () => {
+        const number_checker = check(Number)
+        expect( () => check_function(number_checker, 1))
             .not.toThrow()
-        expect( () => check_function('a', number_checker))
+        expect( () => check_function(number_checker, 'a'))
             .toThrow()
     })
 })
@@ -72,74 +72,74 @@ describe('check_function', () => {
 describe('check', () => {
     it('should work with arrays', () => {
         const schema = [Number]
-        expect(() => check([1,2,3], schema))
+        expect(() => _check(schema, [1,2,3]))
             .not.toThrow()
-        expect(() => check([1,2,'1'], schema))
+        expect(() => _check(schema, [1,2,'1']))
             .toThrow()
     })
     it('should work with objects', () => {
         const schema = {a: Number}
-        expect(() => check({a: 1}, schema))
+        expect(() => _check(schema, {a: 1}))
             .not.toThrow()
-        expect(() => check({b: 1}, schema))
+        expect(() => _check(schema, {b: 1}))
             .toThrow()
-        expect(() => check({a: 'a'}, schema))
+        expect(() => _check(schema, {a: 'a'}))
             .toThrow()
     })
     it('should work with base values', () => {
         const schema = Number
-        expect(() => check( 1, schema))
+        expect(() => _check(schema,  1))
             .not.toThrow()
-        expect(() => check('a', schema))
+        expect(() => _check(schema, 'a'))
             .toThrow()
     })
 
     it('should work with type_check functions', () => {
-        const check_number_array = [Number]
+        const check_number_array = check([Number])
         const schema =  {a: check_number_array}
-        expect(() => check( {a: [1,2,3]}, schema))
+        expect(() => _check(schema, {a: [1,2,3]}))
             .not.toThrow()
-         expect(() => check( {a: [1,'2',3]}, schema))
+         expect(() => _check(schema, {a: [1,'2',3]}))
             .toThrow()
-        expect(() => check( {a: 1}, schema))
+        expect(() => _check(schema, {a: 1}))
             .toThrow()
     })
 
     it('should work with the Function constructor', () => {
         const schema =  [Function]
         const fn = () => {}
-        expect(() => check( [fn,fn], schema))
+        expect(() => _check(schema, [fn,fn]))
             .not.toThrow()
-         expect(() => check( [fn, 1], schema))
+         expect(() => _check(schema, [fn, 1]))
             .toThrow()
-        expect(() => check( fn, schema))
+        expect(() => _check(schema, fn))
             .toThrow()
     })
     it('should handle nested objects', () => {
         const schema = {a: {b: Number, c: Boolean}}
-        expect(() => check( {a: {b: 1, c: true}}, schema))
+        expect(() => _check(schema, {a: {b: 1, c: true}}))
             .not.toThrow()
-        expect(() => check( {a: {b: 1, c: 't'}}, schema))
+        expect(() => _check(schema, {a: {b: 1, c: 't'}}))
             .toThrow()
-        expect(() => check( {a: {b: 1, z: 't'}}, schema))
+        expect(() => _check(schema, {a: {b: 1, z: 't'}}))
             .toThrow()
     })
     it('should handle nested arrays', () => {
         const schema = [[Number]]
-        expect(() => check( [[1,2,3],[4,5]], schema))
+        expect(() => _check(schema, [[1,2,3],[4,5]]))
             .not.toThrow()
-        expect(() => check( [1,2,3,4,5], schema))
+        expect(() => _check(schema, [1,2,3,4,5]))
             .toThrow()
-        expect(() => check( [[1,2,3],[4,'a']], schema))
+        expect(() => _check(schema, [[1,2,3],[4,'a']]))
             .toThrow()
     })
     it('should handle nested mixed objects and arrays', () => {
         const schema = [{a: Number, b: String}]
-        expect(() => check( [{a: 1, b: 'a'}, {a: 123, b: 'abc'}], schema))
+        expect(() => _check(schema, [{a: 1, b: 'a'}, {a: 123, b: 'abc'}]))
             .not.toThrow()
-        expect(() => check( [{c: 1, b: 'a'}, {a: 123, b: 'abc'}], schema))
+        expect(() => _check(schema, [{c: 1, b: 'a'}, {a: 123, b: 'abc'}]))
             .toThrow()
-        expect(() => check( [{a: 1, b: 1}, {a: 123, b: 'abc'}], schema))
+        expect(() => _check(schema, [{a: 1, b: 1}, {a: 123, b: 'abc'}]))
             .toThrow()
     })
     it('should handle deep nested mixed objects and arrays', () => {
@@ -151,24 +151,24 @@ describe('check', () => {
             ]
         }]
 
-        expect(() => check( [{a: 1, b: 'a', c: [{d: true}, {d: false}]}], schema))
+        expect(() => _check(schema, [{a: 1, b: 'a', c: [{d: true}, {d: false}]}]))
             .not.toThrow()
-        expect(() => check( [{a: 1, b: 'a', c: [{d: 'a'}]}], schema))
+        expect(() => _check(schema, [{a: 1, b: 'a', c: [{d: 'a'}]}]))
             .toThrow()
-        expect(() => check( [{a: 1, b: 'a', c: {d: true}}], schema))
+        expect(() => _check(schema, [{a: 1, b: 'a', c: {d: true}}]))
             .toThrow()
-        expect(() => check( [{a: 1, b: 'a', c: [{z: true}]}], schema))
+        expect(() => _check(schema, [{a: 1, b: 'a', c: [{z: true}]}]))
             .toThrow()
     })
 })
 
-describe('type_checker', () => {
+describe('check currying', () => {
     it('should return a function', () => {
-        expect(typeof type_checker({}))
+        expect(typeof check({}))
             .toBe('function')
     })
     it('the returned function should test things', () => {
-        const checker = type_checker({a: Number, b: Number})
+        const checker = check({a: Number, b: Number})
         expect(() => checker({a: 1, b: 2}))
             .not.toThrow()
         expect(() => checker({b: 'a', b: 2}))

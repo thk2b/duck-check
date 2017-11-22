@@ -1,3 +1,3 @@
-const { type_checker } = require('./src')
+const { check } = require('./src')
 
-module.exports = type_checker
+module.exports = check
