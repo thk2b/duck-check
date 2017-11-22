@@ -132,11 +132,11 @@ function check_array(schema, arr){
         })
     }
 
+    const separator = '\n\t |'
     const indent = str => str.replace('\n', '\n\t')
     if(errors.length === 1){
-        throw new TypeError(`Invalid element in array ${JSON.stringify(arr)}: ${(indent(errors[0].message))}`)
+        throw new TypeError(`Invalid element in array ${JSON.stringify(arr)}:${ indent(errors[0].message)}`)
     } else if(errors.length > 1){
-        const separator = '\n\t |'
         const messages = errors.map( (e, i) => ` ${i+1} | ${e.message}` )
         const message = `${errors.length} invalid elements in array ${JSON.stringify(arr)}:${separator}${indent(messages.join(separator))}`
         throw new TypeError(message)
