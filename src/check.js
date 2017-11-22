@@ -89,9 +89,9 @@ function check_object(schema, obj){
         for(let key in schema){
             const val = obj[key]
             const type = schema[key]
-            if(val === 'undefined'){
+            if(typeof val === 'undefined'){
                 throw new TypeError(
-                    `Expected key '${key}' of type '${type}'.`
+                    `Expected key '${key}' but was undefined`
                 )
             }
             _check(schema[key], obj[key])

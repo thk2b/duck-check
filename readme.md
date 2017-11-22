@@ -33,63 +33,55 @@ ___
 Sample usage:
 
 ```js
-const make_checker = require('duck_checker')
+check({ x: Number, y: Number })({ x: 10, y: 15 })
+check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
+/* TypeError: Error in object: Expected 'number'. Got 'string'. */
 
-const check_person = make_checker({
-    name: String,
-    age: Number
+const validate_point = check({ x: Number, y: Number })
+
+validate_point({ x: 10, oups: 15 }) 
+/* TypeError: Error in object: Expected key 'y' but was undefined.. */
+
+validate_point({
+    x: 10, 
+    y: 15, 
+    some_other_key: 'some_other value'
 })
-check_person({
-    name: 'Jane Doe',
-    age: 30
-}) // OK
-check_person({
-    name: 'Jon Snow',
-    age: 26
-}) // OK
-check_person({
-    name: 10001,
-    age: 'some age'
-}) // TypeError
 
-const check_people_list = make_checker([{name: String, age: Number}])
 
-check_people_list([
-    {
-        name: 'Jon Snow',
-        age: 26
-    },
-    {
-        name: 'Jane Doe',
-        age: 30
-    }
-]) // OK
+check([ Number ])([1,2,3])
+check([ Number ])([1,2,'a']) 
+/* TypeError: Invalid element in array: Expected 'number'. Got 'string'. */
 
-check_people_list([
-    {
-        name: 'Jon Snow',
-        age: 26
-    },
-    {
-        name: 'Jane Doe',
-        age: '30'
-    }
-]) // TypeError
+check([ Number ])(1) 
+/* TypeError: Expected 'array'. Got 'number'. */
 
-check_people_list(
-    {
-        name: 'Jon Snow',
-        age: 26
-    }
-) // TypeError
+check([ Number, String ])([1, '1'])
+check([ Number, String ])([1, 456, '1']) 
+/* TypeError: Invalid element in array: Expected positional array of length '2'. Got array of length '3'. */
+
+check([[ Number, [ String ]]])([ /* array of (number and array of string) */
+    [ 1, [ 'a', 'b' ]], [ 2, [ 'c','d' ]]
+])
+check([[ Number, [ String ]]])([
+    [ 1, [ 'a', 'b' ]], [ 2, [ null,'d' ]]
+]) 
+/* TypeError: Invalid element in array: Invalid element in array: Invalid element in array: Expected 'string'. Got 'null'. */
+
+check([ validate_point ])([{ x: 1, y: 1 }, { x: 10, y: 10 }])
+check([ validate_point ])([{ x: 1, y: 1 }, { x: 10, xyz: 10 }]) 
+/* TypeError: Invalid element in array: Error in object: Expected key 'y' but was undefined */
+
+
+const validate = check({ name: String, data: { x: Number, y: Number }})
+
+const data = [
+    { name: 'A', data: { x: 1, y: 2 } },
+    { name: 'B', data: { x: NaN, y: 2 } },
+    { full_name: 'C', data: { x: 1, y: 2 } }
+] 
+
+data.forEach( el => validate(el) ) 
+/* TypeError: Error in object: Error in object: Expected 'number'. Got 'NaN'. */
+
 ```
-
-The make_checker function takes an object or array called a schema. 
-The schema represents the blueprint against which to check any object. 
-A schema is a set of key:value pairs.
-
-`make_checker(schema)` returns a check function. To test any object, call the returned function with any object to be checked against the original schema.
-
-Caveats:
-
-Because of limitations of `typeof`, it is not currently possible to check for a `null` property on an object, as `typeof null` is `'object'`
