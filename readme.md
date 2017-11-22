@@ -10,11 +10,9 @@ ___
 
 🚧 core:
 - [x] Simplify public API: implement `check(schema)(duck)` 
-- [ ] Test with `null`, `NaN`, `undefined`
-- [ ] Handle `null`, `NaN`, `undefined`
-- [ ] Consider making `check` return a boolean and error object instead of raising errors 
-- [ ] Support checking for user-defined classes: declare constructor in schema, use `instanceof`
-- [ ] Check performance
+- [x] Handle `null`, `NaN`, `undefined`
+- [ ] Write `validate_schema`
+
 
 🎨 printing:
 - [x] Improve error messages
@@ -25,6 +23,10 @@ ___
 - [ ] Improve examples
 - [ ] publish to NPM
 
+🏆 possible improvments: 
+- [ ] Check (and improve) performance 
+- [ ] Consider making `check` return a boolean and error object instead of raising errors. 
+Usage: `if(check(Number)(1)){...}`
 ___
 
 Sample usage:
