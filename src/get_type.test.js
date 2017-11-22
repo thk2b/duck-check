@@ -12,13 +12,17 @@ describe('is_type', () => {
         const thing = {a: 'hello'}
         expect(is_type['object'](thing)).toBe(true)
     })
+    it('should find number', () => {
+        const thing = 1
+        expect(is_type['number'](thing)).toBe(true) 
+    })
     it('should find string', () => {
         const thing = 'hello'
         expect(is_type['string'](thing)).toBe(true)
     })
-    it('should find number', () => {
-        const thing = 1
-        expect(is_type['number'](thing)).toBe(true) 
+    it('should find boolean', () => {
+        const thing = true
+        expect(is_type['boolean'](thing)).toBe(true) 
     })
     it('should find function', () => {
         function thing(a){ console.log(a) }
@@ -50,13 +54,17 @@ describe('get_type', () => {
         const thing = {a: 'hello'}
         expect(get_type(thing)).toBe('object')
     })
+    it('should find number', () => {
+        const thing = 1
+        expect(get_type(thing)).toBe('number')
+    })
     it('should find string', () => {
         const thing = 'hello'
         expect(get_type(thing)).toBe('string')
     })
-    it('should find number', () => {
-        const thing = 1
-        expect(get_type(thing)).toBe('number')
+    it('should find boolean', () => {
+        const thing = true
+        expect(get_type(thing)).toBe('boolean') 
     })
     it('should find function', () => {
         function thing(a){ console.log(a) }

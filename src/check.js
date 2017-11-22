@@ -1,3 +1,5 @@
+const { get_type } = require('./get_type')
+
 const is_object = val => (
     typeof val === 'object'
     && val !== null
@@ -35,16 +37,6 @@ function check(schema){
     }
 }
     
-// const checkers = {
-//     array: duck => {
-//         duck.forEach(el, i )
-//     },
-//     object: duck => 
-// }
-
-    
-
-
 /**
  * Private function. 
  * Examines the schema and runs the appropriate checks
@@ -52,53 +44,38 @@ function check(schema){
  * @param {*} duck 
  */
 function _check(schema, duck){
-    // const schema_type = get_type(schema)
-    // const duck_type = get_type(duck)
-    // if(schema_type !== duck_type){
-    //     throw new TypeError(
-    //         `Expected ${ schema_type }. Got '${ duck_type }'.`
-    //     )
-    // }
-    // checkers[get_type(schema)](duck)
-
-    if(is_array(schema)){ /* array */
-        if(!is_array(duck)){
-            throw new TypeError(
-                `Expected array. Got '${ typeof duck}'.`
-            )
-        }
-        check_array(schema, duck)
-    } else if(is_object(schema)){ /* object */
-        if(!is_object(duck)){
-            throw new TypeError(
-                `Expected object. Got '${ typeof duck}'.`
-            )
-        }
-        check_object(schema, duck)
-    } else if(is_anonymous_function(schema)){
-        check_function(schema, duck)
-    } else { /* anyduck else */
-        check_type(schema, duck)
+    let schema_type = get_type(schema)
+    if(schema_type === 'function'){
+        schema_type = schema.name.toLowerCase()
     }
-}
+    const duck_type = get_type(duck)
 
-/**
- * Checks the type of a base value
- * @param {*} value - Base value: not an array or object literal
- * @param {*} type - Constructor 
- */
-function check_type(type, value){
-    if( !type.name ){ 
-        // TODO: remove after implementing validate_schema     
-        throw new TypeError(`Invalid schema key: '${type}' is not a valid type.`)
-    } else if (
-        typeof value === 'number' && isNaN(value) || 
-        typeof value !== type.name.toLowerCase()
-    ){
-        const got = value
-            ?`Got '${value}' of type '${typeof value}'` 
-            :`Got '${value}'`
-        throw new TypeError(`Expected '${type.name}'. ` + got)
+    if(schema_type !== duck_type){
+        if(!(
+            schema_type === 'anonymous_function' || 
+        /* assume it's a check() function, so ignore the differentce in types */
+            schema_type === 'function' && duck_type === 'anonymous_function'
+        /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
+        )){
+            throw new TypeError(
+                `Expected '${ schema_type }'. Got '${ duck_type }'.`
+            )
+        }
+    }
+
+    switch(schema_type){
+        case 'array':
+            check_array(schema, duck)
+            break
+        case 'object':
+            check_object(schema, duck)
+            break
+        case 'anonymous_function':
+            check_function(schema, duck)
+            break
+        default:
+            break
+            // check_type(schema, duck)
     }
 }
 
@@ -168,5 +145,4 @@ module.exports = {
     check_array,
     check_object,
     check_function,
-    check_type
 }

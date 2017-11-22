@@ -1,26 +1,25 @@
 const {
-    check_type,
     check_array,
     check_object,
     check_function,
     check,
     _check
-} = require('./index')
+} = require('./check')
 
 
 describe('public check', () => {
     it('should accept a constructor', () => {
-        expect( () => check_type(Number, 1) )
+        expect( () => _check(Number, 1) )
             .not.toThrow()
-        expect( () => check_type(Number, undefined) )
+        expect( () => _check(Number, undefined) )
             .toThrow()
 
-        expect( () => check_type(String, '1') )
+        expect( () => _check(String, '1') )
             .not.toThrow()
-        expect( () => check_type(String, 1) )
+        expect( () => _check(String, 1) )
             .toThrow()
 
-        expect( () => check_type(Function, () => {}) )
+        expect( () => _check(Function, () => {}) )
             .not.toThrow()
 
     })
