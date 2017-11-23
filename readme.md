@@ -184,7 +184,7 @@ TypeError:
 
 We can declare much more complicated schemas.
 
-```
+```js
 check([[ Number, [ String ]]])([ /* array of (number and array of string) */
     [ 1, [ 'a', 'b' ]], [ 2, [ 'c','d' ]]
 ])
