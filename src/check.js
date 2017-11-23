@@ -56,12 +56,6 @@ function _check(schema, duck){
         }
     }
 
-    if(schema_type === 'array' && schema.length > 1 && duck.length !== schema.length){
-        throw {
-             message: `Expected positional array of length '${schema.length}': Was '${duck.length}'`
-        }
-    }
-
     switch(schema_type){
         case 'array':
             check_array(schema, duck)
@@ -129,9 +123,9 @@ function check_array(schema, arr){
             }
         })
     } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
-        arr.forEach( (el, i) => {
+        schema.forEach( (si, i) => {
             try {
-                _check(schema[i], el)
+                _check(si, arr[i])
             } catch (e) {
                 errors.push(e)
             }
