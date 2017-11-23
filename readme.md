@@ -22,7 +22,7 @@ check(Boolean)(true)
 check(Boolean)('very true')
 /*
 TypeError:
- - Expected boolean: Got string 'true'
+ - Expected boolean: Got string 'verry true'
 */
 
 const validate_person = check({
