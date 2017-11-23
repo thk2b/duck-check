@@ -6,7 +6,6 @@ const {
     _check
 } = require('../check')
 
-
 describe('public check', () => {
     it('should accept a constructor', () => {
         expect( () => _check(Number, 1) )
@@ -54,8 +53,8 @@ describe('check_array', () => {
             .toThrow()
         expect(() => check_array(schema, ['a',2,3]))
             .toThrow()
-        expect(() => check_array(schema, ['a']))
-            .toThrow()
+        expect(() => _check(schema, ['a']))
+            .toThrow() 
     })
 })
 
