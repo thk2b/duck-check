@@ -149,6 +149,7 @@ function check_array(schema, arr){
         }
     }
 }
+
 /**
  * Checks if the value passes the check function provided. 
  * @param {Function} fn - the result of a previous `check(schema) call`

@@ -1,8 +1,7 @@
-// const check = require('duck-check')
-const check = require('./src')
+const check = require('duck-check')
 
 check({ x: Number, y: Number })({ x: 10, y: 15 })
-// check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
+check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
 /* 
 TypeError:
  - Invalid properties in object {"x":10,"y":"hello"}:
@@ -11,7 +10,7 @@ TypeError:
 
 const validate_point = check({ x: Number, y: Number })
 
-// validate_point({ x: 10, oups: 15 }) 
+validate_point({ x: 10, oups: 15 }) 
 /*
 TypeError:
  - Invalid properties in object {"x":10,"oups":15}:
@@ -24,9 +23,8 @@ validate_point({
     some_other_key: 'some_other value'
 })
 
-
 check([ Number ])([1,2,3])
-// check([[Number]])([[1,'2','a'],[1,2,'a']]) 
+check([[Number]])([[1,'2','a'],[1,2,'a']]) 
 /*
 TypeError:
  - 2 invalid elements in array [[1,"2","a"],[1,2,"a"]]:
@@ -37,14 +35,14 @@ TypeError:
          - Expected number: Got string 'a'
 */
 
-// check([ Number ])(1) 
+check([ Number ])(1) 
 /*
 TypeError:
  - Expected array: Got number '1'
 */
 
 check([ Number, String ])([1, '1'])
-// check([ Number, String ])([1, 456, '1']) 
+check([ Number, String ])([1, 456, '1']) 
 /*
 TypeError:
  - Expected positional array of length '2': Was '3'
@@ -53,9 +51,9 @@ TypeError:
 check([[ Number, [ String ]]])([ /* array of (number and array of string) */
     [ 1, [ 'a', 'b' ]], [ 2, [ 'c','d' ]]
 ])
-// check([[ Number, [ String ]]])([
-//     [ 1, [ 'a', 'b' ]], [ 2, [ null,'d' ]]
-// ]) 
+check([[ Number, [ String ]]])([
+    [ 1, [ 'a', 'b' ]], [ 2, [ null,'d' ]]
+]) 
 /*
 TypeError:
  - Invalid element in array [[1,["a","b"]],[2,[1,"d"]]]:
@@ -89,4 +87,3 @@ TypeError:
      - Invalid property in object {"x":null,"y":2}:
          - Expected number: Got NaN
 */
-

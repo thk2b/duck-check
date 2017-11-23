@@ -6,7 +6,6 @@ const {
     _check
 } = require('../check')
 
-
 describe('public check', () => {
     it('should accept a constructor', () => {
         expect( () => _check(Number, 1) )
