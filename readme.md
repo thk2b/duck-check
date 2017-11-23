@@ -1,26 +1,6 @@
 ## duck-check
 
 A minimalist runtime type checking utility.
-___
-
-<b>TODO:</b>
-
-🚧 core:
-- [ ] Write `validate_schema`
-
-
-🎨 printing:
-- [ ] Print schema 
-
-🌐 share:
-- [ ] Write Documentation
-- [ ] Improve examples
-- [ ] publish to NPM
-
-🏆 possible improvments: 
-- [ ] Check (and improve) performance 
-- [x] Batch errors in array and object checkers: instead of throwing after first error is found, run through the rest of the array / object and find all errors.
-___
 
 Usage:
 
@@ -115,4 +95,21 @@ TypeError:
          - Expected number: Got NaN
 */
 ```
+___
 
+<b>TODO:</b>
+
+🚧 core:
+- [ ] Write `validate_schema`
+
+
+🎨 printing:
+- [ ] Print schema 
+
+🌐 share:
+- [ ] Write Documentation
+
+🏆 possible improvments: 
+- [ ] Check (and improve) performance 
+- [x] Batch errors in array and object checkers: instead of throwing after first error is found, run through the rest of the array / object and find all errors.
+___
