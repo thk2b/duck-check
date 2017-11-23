@@ -118,19 +118,6 @@ TypeError:
 
 ```
 
-If a value is not of the type declared in the schema, an error is thrown. 
-
-```js
-validate_point({
-    x: 10, 
-    a: 15, 
-})
-/*
-TypeError:
- - Invalid properties in object {"x":10,"a":15}:
-     - Expected key 'y': Was undefined
-*/
-```
 Keys not declared in the schema are ignored. 
 
 ```js
