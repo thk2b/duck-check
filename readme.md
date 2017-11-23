@@ -22,7 +22,7 @@ check(Boolean)(true)
 check(Boolean)('very true')
 /*
 TypeError:
- - Expected boolean: Got string 'true'
+ - Expected boolean: Got string 'verry true'
 */
 
 const validate_person = check({
@@ -95,9 +95,9 @@ TypeError:
 */
 ```
 
-You can save checker-function by assigning a variable to a call to `check`.
-
 ##### Objects
+
+You can save checker-function by assigning a variable to a call to `check`.
 
 Here, the schema is `{ x: Number, y: Number }`. It means that we expect an object with keys `x` and `y`, each with a type of Number. 
 
@@ -105,7 +105,7 @@ Here, the schema is `{ x: Number, y: Number }`. It means that we expect an objec
 const validate_point = check({ x: Number, y: Number })
 ```
 
-If a value is not of the type declared in the schema, an error is thrown. 
+If a key declared in the schema is not in the object, an error is thrown.
 
 ```js
 
@@ -118,19 +118,6 @@ TypeError:
 
 ```
 
-If a key declared in the schema is not in the object, an error is thrown.
-
-```js
-validate_point({
-    x: 10, 
-    a: 15, 
-})
-/*
-TypeError:
- - Invalid properties in object {"x":10,"a":15}:
-     - Expected key 'y': Was undefined
-*/
-```
 Keys not declared in the schema are ignored. 
 
 ```js
@@ -146,7 +133,7 @@ Passing other types raise errors as expected.
 
 ```js
 validate_point('how did I get there ?')
-*/
+/*
 TypeError:
  - Expected object: Got string 'how did I get there ?'
  */
