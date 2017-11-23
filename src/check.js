@@ -1,21 +1,5 @@
 const { get_type } = require('./get_type')
-
-const is_object = val => (
-    typeof val === 'object'
-    && val !== null
-)
-const is_array = val => Array.isArray(val)
-const is_anonymous_function = val => (
-    typeof val === 'function'
-    && !val.name /* make sure it's not the Function constructor but a function to test the value */ 
-)
-
-function print_error(console, duck, schema){
-    console.error(`\n| Expected\n`)
-    console.dir(schema)
-    console.error(`\n| But got \n`)
-    console.dir(duck)
-}
+const error_message = require('./error_message')
 
 /**
  * Public facing curried function 
@@ -31,8 +15,7 @@ function check(schema){
         try {
             _check(schema, duck)
         } catch (e) {
-            print_error(console, duck, schema)
-            throw e
+            throw new TypeError(error_message(e))
         }
     }
 }
@@ -57,9 +40,9 @@ function _check(schema, duck){
             schema_type === 'function' && duck_type === 'anonymous_function'
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
-            throw new TypeError(
-                `Expected ${ schema_type } – Got ${ duck_type.replace('_', ' ') } '${duck}'`
-            )
+            throw {
+                message: `Expected ${ schema_type } – Got ${ duck_type.replace('_', ' ') } '${duck}'`
+            }
         }
     }
 
@@ -119,9 +102,9 @@ function check_array(schema, arr){
         })
     } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
         if(schema.length !== arr.length){
-            throw new TypeError(
-                `Expected positional array of length '${schema.length}'. Got array of length '${arr.length}'`
-            )
+            throw {
+                message: `Expected positional array of length '${schema.length}'. Got array of length '${arr.length}'`
+            }
         }
         arr.forEach( (el, i) => {
             try {
@@ -132,14 +115,16 @@ function check_array(schema, arr){
         })
     }
 
-    const separator = '\n\t |'
-    const indent = str => str.replace('\n', '\n\t')
     if(errors.length === 1){
-        throw new TypeError(`Invalid element in array ${JSON.stringify(arr)}:${ indent(errors[0].message)}`)
+        throw {
+            message: `Invalid element in array ${JSON.stringify(arr)}`,
+            data: errors
+        }
     } else if(errors.length > 1){
-        const messages = errors.map( (e, i) => ` ${i+1} | ${e.message}` )
-        const message = `${errors.length} invalid elements in array ${JSON.stringify(arr)}:${separator}${indent(messages.join(separator))}`
-        throw new TypeError(message)
+        throw {
+            message: `${errors.length} invalid elements in array ${JSON.stringify(arr)}`,
+            data: errors
+        }
     }
 }
 /**
