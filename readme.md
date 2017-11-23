@@ -9,7 +9,7 @@ A minimalist runtime type checking utility.
 ##### Installation
 
 ```
-npm install duck-check
+npm install --save duck-check
 ```
 ```js
 
