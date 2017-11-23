@@ -95,9 +95,9 @@ TypeError:
 */
 ```
 
-You can save checker-function by assigning a variable to a call to `check`.
-
 ##### Objects
+
+You can save checker-function by assigning a variable to a call to `check`.
 
 Here, the schema is `{ x: Number, y: Number }`. It means that we expect an object with keys `x` and `y`, each with a type of Number. 
 
