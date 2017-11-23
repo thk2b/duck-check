@@ -12,9 +12,17 @@ const check = require('duck-check')
 
 check(Number)(1)
 check(Number)(NaN) 
+
 /*
 TypeError:
  - Expected number: Got NaN
+*/
+
+check(Boolean)(true)
+check(Boolean)('very true')
+/*
+TypeError:
+ - Expected boolean: Got string 'true'
 */
 
 const validate_person = check({
@@ -66,7 +74,7 @@ import check from 'duck-check'
 ```
 
 The check function takes a *schema* as an argument, and returns a function. Pass anything to this function, and a helpful error will be thrown if the argument does not match the schema.  
-Suported types in a schema are array literal, object literals, and the Number, String, and Function constructors. 
+Suported types in a schema are array literal, object literals, and the Number, String, Boolean and Function constructors. 
 This will NOT work with other constructors.
 
 ```js
