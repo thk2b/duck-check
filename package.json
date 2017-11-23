@@ -1,13 +1,17 @@
 {
-  "name": "duck_check",
+  "name": "duck-check",
   "version": "1.0.0",
   "description": "A minimalist tool to check the shape of objects and the type of properties, provided a declarative schema.",
-  "main": "duck_check.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "author": "",
-  "license": "ISC",
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/thk2b/duck-check"
+  },
+  "license": "MIT",
   "devDependencies": {
     "jest": "^21.2.1"
   }
