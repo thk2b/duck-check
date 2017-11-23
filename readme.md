@@ -105,7 +105,7 @@ Here, the schema is `{ x: Number, y: Number }`. It means that we expect an objec
 const validate_point = check({ x: Number, y: Number })
 ```
 
-If a value is not of the type declared in the schema, an error is thrown. 
+If a key declared in the schema is not in the object, an error is thrown.
 
 ```js
 
@@ -118,7 +118,7 @@ TypeError:
 
 ```
 
-If a key declared in the schema is not in the object, an error is thrown.
+If a value is not of the type declared in the schema, an error is thrown. 
 
 ```js
 validate_point({
