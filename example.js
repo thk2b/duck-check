@@ -1,3 +1,3 @@
 const check = require('./index')
 
-check([Number, String])(['a',2,'a'])
+check([ Number, String ])([1, 456, '1']) 

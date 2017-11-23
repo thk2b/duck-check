@@ -173,7 +173,8 @@ check([ Number, String ])([1, '1'])
 check([ Number, String ])([1, 456, '1']) 
 /*
 TypeError:
- - Expected positional array of length '2': Was '3'
+ - Invalid element in array [1,456,"1"]:
+     - Expected string: Got number '456'
 */
 ```
 
