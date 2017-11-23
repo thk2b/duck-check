@@ -1,5 +1,19 @@
 const MAX_INDENT = 5
 
+const generate_error = (data, singular, plural) => {
+    if(data.length === 1){
+        throw {
+            message: singular,
+            data
+        }
+    } else if(data.length > 1){
+        throw {
+            message: plural,
+            data
+        }
+    }
+}
+
 const indent = (str, level) => {
     const space = Array(Math.min(MAX_INDENT, level+1 )).join('    ')
     return str.replace('\n', '\n' + space)
@@ -18,4 +32,7 @@ function error_message(error, indent_level=0){
     }
 }
 
-module.exports = error_message
+module.exports = {
+    generate_error,
+    error_message
+}

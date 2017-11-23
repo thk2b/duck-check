@@ -52,7 +52,7 @@ describe('check_array', () => {
         expect(() => check_array(schema, [1,2]))
             .toThrow()
         expect(() => check_array(schema, ['a',2,3]))
-            .toThrow()
+            .not.toThrow()
         expect(() => _check(schema, ['a']))
             .toThrow() 
     })

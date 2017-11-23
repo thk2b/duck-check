@@ -1,5 +1,5 @@
 const { get_type } = require('./get_type')
-const error_message = require('./error_message')
+const { error_message, generate_error } = require('./errors')
 
 
 /**
@@ -47,9 +47,13 @@ function _check(schema, duck){
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
             let value = ` '${duck}'`
-            if(duck_type === 'null' || duck_type === 'undefined' || duck_type === 'NaN'){
-                value = ''
+            switch(duck_type){
+                case 'null':
+                case 'undefined':
+                case 'NaN':
+                    value = ''
             }
+
             throw {
                 message: `Expected ${ schema_type }: Got ${ duck_type.replace('_', ' ') }${value}`
             }
@@ -57,11 +61,11 @@ function _check(schema, duck){
     }
 
     switch(schema_type){
-        case 'array':
-            check_array(schema, duck)
-            break
         case 'object':
             check_object(schema, duck)
+            break
+        case 'array':
+            check_array(schema, duck)
             break
         case 'anonymous_function':
             check_function(schema, duck)
@@ -72,7 +76,7 @@ function _check(schema, duck){
 }
 
 /**
- * Checks the existance of all keys declared on the schema and their type
+ * Checks the type and existance of all keys declared on the schema
  * @param {Object} obj
  * @param {Object} schema 
  */
@@ -81,7 +85,6 @@ function check_object(schema, obj){
     for(let key in schema){
         try{
             const val = obj[key]
-            const type = schema[key]
             if(typeof val === 'undefined'){
                 throw {
                     message: `Expected key '${key}': Was undefined`
@@ -93,17 +96,10 @@ function check_object(schema, obj){
         }
     }
 
-    if(errors.length === 1){
-        throw {
-            message: `Invalid property in object ${JSON.stringify(obj)}:`,
-            data: errors
-        }
-    } else if(errors.length > 1){
-        throw {
-            message: `${errors.length} invalid properties in object ${JSON.stringify(obj)}:`,
-            data: errors
-        }
-    }
+    generate_error(errors, 
+        `Invalid property in object ${JSON.stringify(obj)}:`,
+        `${errors.length} invalid properties in object ${JSON.stringify(obj)}:`
+    )
 }
 
 /**
@@ -132,17 +128,10 @@ function check_array(schema, arr){
         })
     }
 
-    if(errors.length === 1){
-        throw {
-            message: `Invalid element in array ${JSON.stringify(arr)}:`,
-            data: errors
-        }
-    } else if(errors.length > 1){
-        throw {
-            message: `${errors.length} invalid elements in array ${JSON.stringify(arr)}:`,
-            data: errors
-        }
-    }
+    generate_error(errors, 
+        `Invalid element in array ${JSON.stringify(arr)}:`,
+        `${errors.length} invalid elements in array ${JSON.stringify(arr)}:`
+    )
 }
 
 /**
