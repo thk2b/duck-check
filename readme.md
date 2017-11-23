@@ -66,6 +66,8 @@ import check from 'duck-check'
 ```
 
 The check function takes a *schema* as an argument, and returns a function. Pass anything to this function, and a helpful error will be thrown if the argument does not match the schema.  
+Suported types in a schema are array literal, object literals, and the Number, String, and Function constructors. 
+This will NOT work with other constructors.
 
 ```js
 check({ x: Number, y: Number })({ x: 10, y: 15 })
