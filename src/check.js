@@ -10,16 +10,21 @@ function check(schema){
     /**
      * Check function
      * @param {*} duck – Any object to be checked against the schema
+     * @param {Boolean} _generate_message - Tell the checker function not to produce an error message. See check_function
      */
-    return duck => {
+    return (duck, _generate_message = true) => {
         try {
             _check(schema, duck)
         } catch (e) {
-            throw new TypeError(error_message(e))
+            if(_generate_message){
+                throw new TypeError(error_message(e) + '\n\n')
+            } else {
+                throw e
+            }
         }
     }
 }
-    
+
 /**
  * Private function. 
  * Examines the schema and runs the appropriate checks
@@ -40,9 +45,19 @@ function _check(schema, duck){
             schema_type === 'function' && duck_type === 'anonymous_function'
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
-            throw {
-                message: `Expected ${ schema_type } – Got ${ duck_type.replace('_', ' ') } '${duck}'`
+            let value = ` '${duck}'`
+            if(duck_type === 'null' || duck_type === 'undefined' || duck_type === 'NaN'){
+                value = ''
             }
+            throw {
+                message: `Expected ${ schema_type }: Got ${ duck_type.replace('_', ' ') }${value}`
+            }
+        }
+    }
+
+    if(schema_type === 'array' && schema.length > 1 && duck.length !== schema.length){
+        throw {
+             message: `Expected positional array of length '${schema.length}': Was '${duck.length}'`
         }
     }
 
@@ -58,7 +73,6 @@ function _check(schema, duck){
             break
         default:
             break
-            // check_type(schema, duck)
     }
 }
 
@@ -68,19 +82,32 @@ function _check(schema, duck){
  * @param {Object} schema 
  */
 function check_object(schema, obj){
-    try {
-        for(let key in schema){
+    let errors = []
+    for(let key in schema){
+        try{
             const val = obj[key]
             const type = schema[key]
             if(typeof val === 'undefined'){
-                throw new TypeError(
-                    `Expected key '${key}' but was undefined`
-                )
+                throw {
+                    message: `Expected key '${key}': Was undefined`
+                }
             }
             _check(schema[key], obj[key])
+        } catch (e) {
+            errors.push(e)
         }
-    } catch (e) {
-        throw new TypeError('Error in object: ' + e.message)
+    }
+
+    if(errors.length === 1){
+        throw {
+            message: `Invalid property in object ${JSON.stringify(obj)}:`,
+            data: errors
+        }
+    } else if(errors.length > 1){
+        throw {
+            message: `${errors.length} invalid properties in object ${JSON.stringify(obj)}:`,
+            data: errors
+        }
     }
 }
 
@@ -101,11 +128,6 @@ function check_array(schema, arr){
             }
         })
     } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
-        if(schema.length !== arr.length){
-            throw {
-                message: `Expected positional array of length '${schema.length}'. Got array of length '${arr.length}'`
-            }
-        }
         arr.forEach( (el, i) => {
             try {
                 _check(schema[i], el)
@@ -117,12 +139,12 @@ function check_array(schema, arr){
 
     if(errors.length === 1){
         throw {
-            message: `Invalid element in array ${JSON.stringify(arr)}`,
+            message: `Invalid element in array ${JSON.stringify(arr)}:`,
             data: errors
         }
     } else if(errors.length > 1){
         throw {
-            message: `${errors.length} invalid elements in array ${JSON.stringify(arr)}`,
+            message: `${errors.length} invalid elements in array ${JSON.stringify(arr)}:`,
             data: errors
         }
     }
@@ -134,7 +156,7 @@ function check_array(schema, arr){
  */
 function check_function(fn, value){
     try {
-        fn(value)
+        fn(value, false)
     } catch (e){
         throw e
     }
