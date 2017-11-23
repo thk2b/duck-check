@@ -133,7 +133,7 @@ Passing other types raise errors as expected.
 
 ```js
 validate_point('how did I get there ?')
-*/
+/*
 TypeError:
  - Expected object: Got string 'how did I get there ?'
  */
