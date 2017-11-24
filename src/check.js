@@ -1,5 +1,5 @@
 const { get_type } = require('./get_type')
-const { error_message, generate_error } = require('./errors')
+const { generate_error, error_messages } = require('./errors')
 
 /**
  * Private function. 
@@ -8,49 +8,55 @@ const { error_message, generate_error } = require('./errors')
  * @param {*} duck 
  */
 function _check(schema, duck){
-    let schema_type = get_type(schema)
-    let duck_type = get_type(duck)
+    const schema_type = get_type(schema)
+    const duck_type = get_type(duck)
 
-    if(schema_type === 'function'){
-        if(duck_type === 'object' && duck instanceof schema){
-            duck_type = schema.name.toLowerCase()
+    if(schema_type === duck_type){
+        switch(schema_type){
+            case 'array':
+                check_array(schema, duck)
+                break
+            case 'object':
+                check_object(schema, duck)
+                break
+            default:
+                break
         }
-        schema_type = schema.name.toLowerCase()
-    }
-    
-    if(schema_type !== duck_type){
-        if(!(
-            schema_type === 'anonymous_function' || 
-        /* assume it's a check() function, so ignore the differentce in types */
-            schema_type === 'function' && duck_type === 'anonymous_function' 
-        /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
-        )){
-            let value = `'${duck}'`
-            switch(duck_type){
-                case 'null':
-                case 'undefined':
-                case 'NaN':
-                    value = ''
+    } else if( schema_type === 'function'){
+        /* is a constructor such as Number, String, Function 
+           or a check or assert function 
+        */
+        const name = schema.name.toLowerCase()
+        switch(duck_type){
+            case 'object': 
+                if(! duck instanceof schema){
+                    throw {
+                        message: error_messages[7](schema.name, duck_type)
+                    }
+                }
+                break
+            case 'number':
+            case 'string':
+            case 'boolean':
+            if(name !== duck_type){
+                throw{
+                    message: error_messages[1](name, duck_type, duck)
+                }
             }
-
-            throw {
-                message: `Expected ${ schema_type }: Got ${ duck_type.replace('_', ' ') } ${value}`
-            }
+            break
+            case 'anonymous_function':
+                break
+            default:
+                throw{
+                    message: error_messages[1](name, duck_type, duck)
+                }
         }
-    }
-
-    switch(schema_type){
-        case 'object':
-            check_object(schema, duck)
-            break
-        case 'array':
-            check_array(schema, duck)
-            break
-        case 'anonymous_function':
-            check_function(schema, duck)
-            break
-        default:
-            break
+    } else if (schema_type === 'anonymous_function'){
+        check_function(schema, duck)
+    } else {
+        throw {
+            message: error_messages[1](schema_type, duck_type, duck)
+        }
     }
 }
 
@@ -66,7 +72,7 @@ function check_object(schema, obj){
             const val = obj[key]
             if(typeof val === 'undefined'){
                 throw {
-                    message: `Expected key '${key}': Was undefined`
+                    message: error_messages[4](key)
                 }
             }
             _check(schema[key], obj[key])
@@ -74,11 +80,12 @@ function check_object(schema, obj){
             errors.push(e)
         }
     }
-
-    generate_error(errors, 
-        `Invalid property in object ${JSON.stringify(obj)}:`,
-        `${errors.length} invalid properties in object ${JSON.stringify(obj)}:`
-    )
+    if(errors.length > 0){
+        throw {
+            message: error_messages[5](obj, errors.length),
+            data: errors
+        }
+    }
 }
 
 /**
@@ -97,6 +104,12 @@ function check_array(schema, arr){
                 errors.push(e)
             }
         })
+        if(errors.length > 0){
+            throw {
+                message: error_messages[2](arr, errors.length),
+                data: errors
+            }
+        }
     } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
         schema.forEach( (si, i) => {
             try {
@@ -105,12 +118,13 @@ function check_array(schema, arr){
                 errors.push(e)
             }
         })
+        if(errors.length > 0){
+            throw {
+                message: error_messages[3](arr, errors.length),
+                data: errors
+            }
+        }
     }
-
-    generate_error(errors, 
-        `Invalid element in array ${JSON.stringify(arr)}:`,
-        `${errors.length} invalid elements in array ${JSON.stringify(arr)}:`
-    )
 }
 
 /**
@@ -120,16 +134,17 @@ function check_array(schema, arr){
  */
 function check_function(fn, value){
     let ret /* store return value in case the function is an assertion */
+    
+    const _throw = () => {
+        throw { message: error_messages[6](value) }
+    }
     try {
-        ret = fn(value, true)
+        ret = fn(value)
     } catch (e){
-        throw e
+        _throw()
     }
     if(ret === false){
-        throw {
-            // TODO: write better error message
-            message: `Invalid element: assertion failed`
-        }
+        _throw()
     }
 }
 

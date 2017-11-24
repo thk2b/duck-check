@@ -32,6 +32,10 @@ const either = (a, b) => duck => {
     }
 }
 
+const nonEmpty = non_empty = schema => duck => {
+
+}
+
 module.exports = {
     either
 }
