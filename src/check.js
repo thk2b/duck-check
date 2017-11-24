@@ -6,10 +6,10 @@ const { error_messages } = require('./errors')
  * Examines the schema and runs the appropriate checks
  * @param {*} schema 
  * @param {*} duck 
+ * @param {String} schema_type - Optional type - In modifiers, it is necesary to know the type before calling check. So it is more efficient to get them once and pass them
+ * @param {String} duck_type - idem
  */
-function _check(schema, duck){
-    const schema_type = get_type(schema)
-    const duck_type = get_type(duck)
+function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(duck)){
 
     if(schema_type !== duck_type){
         if( schema_type === 'function'){
@@ -145,16 +145,13 @@ function check_array(schema, arr){
 function check_function(fn, value){
     let ret /* store return value in case the function is an assertion */
     
-    const _throw = () => {
-        throw { message: error_messages[6](value) }
-    }
     try {
-        ret = fn(value)
+        ret = fn(value, true)
     } catch (e){
-        _throw()
+        throw { message: error_messages[6](value), data: [e] }
     }
     if(ret === false){
-        _throw()
+        throw { message: error_messages[6](value)}
     }
 }
 

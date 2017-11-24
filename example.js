@@ -1,16 +1,7 @@
 const {assert, check} = require('./index')
-const {either} = require('./src/modifiers')
+const {either, not, any} = require('./src/modifiers')
 
 
-// const checker = check({
-//     a: either(null, String), 
-//     b: either([String], [Date])
-// })
+// check(either(Number, null))()
 
-// checker({
-//     a: null,
-//     b: ['null', new Date()]
-// })
-
-check(either(Date, String))(1)
-check(either(Date, String))('a')
+check({x: not(any())})({x: 1})

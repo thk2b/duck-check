@@ -10,12 +10,14 @@ function check(schema){
     /**
      * Check function
      * @param {*} duck – Any object to be checked against the schema
+     * @param {Boolean} _throw_raw_error - Hack to allow a clean error message to be produced when using a check function in a schema
      * @return {undefined} - Returns undefined or throws a TypeError.
      */
-    return (duck) => {
+    return (duck, _throw_raw_error=false) => {
         try {
             _check(schema, duck)
         } catch (e) {
+            if(_throw_raw_error) throw e
             throw new TypeError(generate_error_message(e) + '\n\n')
         }
     }
