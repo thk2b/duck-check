@@ -155,8 +155,15 @@ Any checker function can be declared in a schema.
 For instance, we can declare an array of `Person`
 
 ```js
-assert([Person])({name: 'jane', age: 30}, {name: 'john', age: 60}) /* true */
-assert([Person])({name: 'jane', age: 30}, {name: 'john', age: NaN}) /* false */
+assert([Person])([{name: 'jane', age: 30}, {name: 'john', age: 60}]) /* true */
+check([Person])([{name: 'jane', age: 30}, {name: 'john', age: NaN}]) 
+/*
+TypeError:
+ - Invalid element in array [{"name":"jane","age":30},{"name":"john","age":"01"}]:
+     - Invalid type: custom check failed on {"name":"john","age":"01"}:
+         - Invalid property in object {"name":"john","age":"01"}:
+             - Expected number: Got string 01
+*/
 ```
 
 You can freely mix checker-functions obtained through `assert` and `check`. 
