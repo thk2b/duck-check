@@ -69,7 +69,8 @@ TypeError:
              - Expected number: Got NaN
 */
 
-
+assert(Date)(new Date()) /* true */
+assert(Date)(null) /* false */
 ```
 
 #### Guide
