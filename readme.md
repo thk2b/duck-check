@@ -2,10 +2,18 @@
 
 A minimalist runtime type checking utility.
 
+[![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
+[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
+
 ### Usage:
 
 #### Quick Start
 
+##### Installation
+
+```
+npm install --save duck-check
+```
 ```js
 
 const check = require('duck-check')
@@ -22,7 +30,7 @@ check(Boolean)(true)
 check(Boolean)('very true')
 /*
 TypeError:
- - Expected boolean: Got string 'verry true'
+ - Expected boolean: Got string 'very true'
 */
 
 const validate_person = check({
@@ -57,6 +65,8 @@ TypeError:
          - 2 invalid properties in object {"amount":null}:
              - Expected number: Got NaN
 */
+
+
 ```
 
 #### Guide
@@ -198,10 +208,23 @@ TypeError:
 ##### Functions
 
 A previously declared checker-function can be used anywhere in a schema.
+Here, `Point` is the same as `validate_point` from earlier but with a more convenient name. 
+Note: Do not use this naming convention in a project involving object-oriented classes! 
 
 ```js
-check([ validate_point ])([{ x: 1, y: 1 }, { x: 10, y: 10 }])
-check([ validate_point ])([{ x: 10, xyz: 10 },{ x: 'a', y: 1 } ]) 
+const Point = check({
+    x: Number, 
+    y: Number
+})
+
+```
+Here, `check(Point)({x:1, y:1})` and `Point({x:1, y:1})` are equivalent, though the latter is more efficient. This shows that a previously declared checker function can be used in a schema. 
+
+More interesting schemas can be built. This one checks for an array of elements that are expected to pass the `Point` checker function. 
+
+```js
+check([ Point ])([{ x: 1, y: 1 }, { x: 10, y: 10 }])
+check([ Point ])([{ x: 10, xyz: 10 },{ x: 'a', y: 1 } ]) 
 /*
 TypeError:
  - 2 invalid elements in array [{"x":10,"xyz":10},{"x":"a","y":1}]:
@@ -211,6 +234,7 @@ TypeError:
          - Expected number: Got string 'a'
 */
 ```
+
 
 Of course, you can stil check for functions as values
 
