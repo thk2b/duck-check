@@ -1,3 +1,4 @@
 const {assert, check} = require('./index')
+const {either} = require('./src/modifiers')
 
-check([Date])([new Date(), new Date()])
+check(either(Number, String)(null))
