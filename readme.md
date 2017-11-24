@@ -16,7 +16,7 @@ npm install --save duck-check
 ```
 ```js
 
-const { check, assert } = require('duck-check')
+const check = require('duck-check')
 
 check(Number)(1)
 check(Number)(NaN) 
@@ -25,9 +25,6 @@ check(Number)(NaN)
 TypeError:
  - Expected number: Got NaN
 */
-
-assert(Number)(1) /* true */
-assert(Number)('a') /* false */
 
 check(Boolean)(true)
 check(Boolean)('very true')
@@ -68,9 +65,6 @@ TypeError:
          - 2 invalid properties in object {"amount":null}:
              - Expected number: Got NaN
 */
-
-assert(Date)(new Date()) /* true */
-assert(Date)(null) /* false */
 ```
 
 #### Guide
