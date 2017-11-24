@@ -1,5 +1,5 @@
 const {assert, check} = require('./index')
-const {either, not, any} = require('./src/modifiers')
+const { not, any } = require('./index').modifiers
 
 
 // check(either(Number, null))()

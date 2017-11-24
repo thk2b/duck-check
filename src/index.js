@@ -1,5 +1,6 @@
 const { _check } = require('./check')
 const { generate_error_message } = require('./errors')
+const modifiers = require('./modifiers')
 
 /**
  * Public function. Checks if the duck matches the schema 
@@ -46,5 +47,6 @@ function assert(schema){
 
 module.exports = {
     check, 
-    assert
+    assert,
+    modifiers
 }
