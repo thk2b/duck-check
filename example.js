@@ -1,5 +1,7 @@
 const {assert, check} = require('./index')
 
-const asserter = assert(Number)
+const not = a => {
+    return a
+}
 
-check([asserter])([1,2,'3'])
+check(not(Number))('a')
