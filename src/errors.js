@@ -32,20 +32,6 @@ const error_messages = {
     8: (element_type) => `Expected array. Was empty`
 }
 
-const generate_error = (data, singular, plural) => {
-    if(data.length === 1){
-        throw {
-            message: singular,
-            data
-        }
-    } else if(data.length > 1){
-        throw {
-            message: plural,
-            data
-        }
-    }
-}
-
 const indent = (str, level) => {
     const space = Array(Math.min(MAX_INDENT, level+1 )).join('    ')
     return str.replace('\n', '\n' + space)
@@ -65,7 +51,6 @@ function generate_error_message(error, indent_level=0){
 }
 
 module.exports = {
-    generate_error,
     generate_error_message,
     error_messages
 }

@@ -1,5 +1,5 @@
 const { get_type } = require('./get_type')
-const { generate_error, error_messages } = require('./errors')
+const { error_messages } = require('./errors')
 
 /**
  * Private function. 
