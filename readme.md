@@ -9,25 +9,24 @@ A minimalist runtime type checking utility.
 
 - [x] Assert function: retrurns a Boolean instead of throwing a TypeError.
 - [x] Support checking for instances of a class. Usage: `check(Date)(new Date())`.
-- [ ] Add modifiers. Usage: `either(Number,null)`, `not(null)`
+- [x] Add modifiers. Usage: `either(Number,null)`, `not(null)`
 - [ ] Update Docs and examples. Add API section to docs. Work with jsdocs
 
-### Usage:
-
-#### Quick Start
-
-##### Installation
-
+## Usage:
+### Installation
+`duck-check` is a Javascript package published in the NPM registry. Install by running
 ```
 npm install --save duck-check
 ```
+
+### Quick Start
 ```js
 
-const { check, assert } = require('duck-check')
+const { check, assert, modifiers } = require('duck-check')
+const { not, any, either, nonEmpty } = modifiers
 
 check(Number)(1)
 check(Number)(NaN) 
-
 /*
 TypeError:
  - Expected number: Got NaN
@@ -43,6 +42,7 @@ TypeError:
  - Expected boolean: Got string 'very true'
 */
 
+// Reuse a checker-function
 const validate_person = check({
   name: String, 
   age: Number,
@@ -76,12 +76,29 @@ TypeError:
              - Expected number: Got NaN
 */
 
+// check for class instance
 assert(Date)(new Date()) /* true */
 assert(Date)(null) /* false */
+
+assert(not(null))(1) /* true */
+check(not(null))(null)
+/*
+TypeError:
+ - Invalid type: custom check failed on null:
+     - Expected not null: Got null 
+*/
+
+assert(not(not(Number)))(Number) /* true */
+assert({x: any()})({x: 1}) /* true */
+assert({x: any()})({abc: 1}) /* false */
+
+assert(either(String, Number))(1) /* true */
+assert(either(String, Number))('a') /* true */
+assert(either(String, Number))(undefined) /* false */
 ```
 
-#### Guide
-##### Importing:
+### Guide
+#### Importing:
 
 In Node:
 ```js
@@ -94,77 +111,75 @@ ES6 modules:
 import check from 'duck-check'
 ```
 
-The check function takes a *schema* as an argument, and returns a function. Pass anything to this function, and a helpful error will be thrown if the argument does not match the schema.  
-Suported types in a schema are array literal, object literals, and the Number, String, Boolean and Function constructors. 
-This will NOT work with other constructors.
+#### API
+
+`duck-check` exposes two functions and an object.
+
+##### check(schema)(data)
+##### assert(schema)(data) 
+
+A valid schema is either a constructor, an object, an array, or an anonymous function.
+Objects and array schemas are valid if they also contain a valid schema.
+The following are examples of basic valid schemas: 
 
 ```js
-check({ x: Number, y: Number })({ x: 10, y: 15 })
-/* Does nothing*/
-
-check({ x: Number, y: Number })({ x: 10, y: 'hello' }) 
-/* 
-TypeError:
- - Invalid properties in object {"x":10,"y":"hello"}:
-     - Expected number: Got string 'hello'
-*/
-check({ x: Number, y: Number })({ x: 10, y: NaN })
-/* 
-TypeError:
- - Invalid properties in object {"x":10,"y":NaN}:
-     - Expected number: Got NaN
-*/
+check(Number)
+check([Boolean]) // Array of Booleans
+check({a: String}) // Object with key a of type string
 ```
 
-##### Objects
-
-You can save checker-function by assigning a variable to a call to `check`.
-
-Here, the schema is `{ x: Number, y: Number }`. It means that we expect an object with keys `x` and `y`, each with a type of Number. 
+`check` and `assert` both return functions that take any data as argument. 
+You can directly call this function:
 
 ```js
-const validate_point = check({ x: Number, y: Number })
+check(Number)(1)
+assert(Number)(NaN) /* false */
 ```
-
-If a key declared in the schema is not in the object, an error is thrown.
+Or you can assign it to a variable:
 
 ```js
-
-validate_point({ x: 10, oups: 15 }) 
-/*
-TypeError:
- - Invalid properties in object {"x":10,"oups":15}:
-     - Expected key 'y': Was undefined
-*/
-
+validate_person = check({name: String, age: Number})
+assert_person = assert({name: String, age: Number})
+validate_person({name: 'jane', age: 30}) 
 ```
 
-Keys not declared in the schema are ignored. 
+We will use the following naming convention: 
 
 ```js
-
-validate_point({
-    x: 10, 
-    y: 15, 
-    some_other_key: 'some_other value'
-})
-
+const Person = check({name: String, age: Number})
 ```
-Passing other types raise errors as expected.
+Warning: Do not use this naming convention in a project involving classes.
+
+We refer to the function returned by `check` or `assert` as a 'checker function'. 
+Any checker function can be declared in a schema. 
+For instance, we can declare an array of `Person`
 
 ```js
-validate_point('how did I get there ?')
-/*
-TypeError:
- - Expected object: Got string 'how did I get there ?'
- */
+assert([Person])({name: 'jane', age: 30}, {name: 'john', age: 60}) /* true */
+assert([Person])({name: 'jane', age: 30}, {name: 'john', age: NaN}) /* false */
 ```
 
-##### Arrays
+You can freely mix checker-functions obtained through `assert` and `check`. 
+
+```js
+const asserter = assert(Number)
+const checker = check(Number)
+
+assert([checker])([1,2,3]) /* true */
+check([asserter])([1,2,3]) 
+
+assert([checker])([1,2,'a']) /* false */
+check([asserter])([1,2,3]) /* TypeError */
+```
+
+This means that any anonymous function in the schema that returns false causes the test to fail. 
+
+#### Arrays
 
 `duck-check` will check all the elements in the array and find all invalid ones.
 There are two ways of declaring arrays.
-This declaration means we want an array of numbers of any non-zero length.
+
+The followinf declaration means we want an array of numbers of any length, potentially empty. Use the `nonEmpty` modifier to declare a non-empty array, see the modifier section below.
 
 ```js
 check([ Number ])([1,2,3])
@@ -178,14 +193,10 @@ TypeError:
      - Invalid element in array [1,2,"a"]:
          - Expected number: Got string 'a'
 */
-check([Number])(1)
-/*
-TypeError:
- - Expected array: Got number '1'
-*/
+assert([Number])(1) /* false */
 ```
  
-This means we want an array with a number in first position, an a string in second.
+The following declaration means we want an array with a number in first position, an a string in second.
 This refered to as a positional array, since the position of element matters.
 
 ```js
@@ -216,40 +227,62 @@ TypeError:
              - Expected string: Got number '1'
 */
 ```
-##### Functions
 
-A previously declared checker-function can be used anywhere in a schema.
-Here, `Point` is the same as `validate_point` from earlier but with a more convenient name. 
-Note: Do not use this naming convention in a project involving object-oriented classes! 
+#### Modifiers
 
+Modifiers are called with schemas and return anonymous functions that take the data being tested. 
+There are four modifiers: 
+
+##### any() - Takes no argument. You MUST call the function. Passing the function without calling makes the schema invalid, because functions in schemas must be anonymous. 
 ```js
-const Point = check({
-    x: Number, 
-    y: Number
-})
-
+assert(any())() /* always true */
+assert({x: any()})({x: 1}) /* true */
+assert({x: any()})({y: 1}) /* false */
 ```
-Here, `check(Point)({x:1, y:1})` and `Point({x:1, y:1})` are equivalent, though the latter is more efficient. This shows that a previously declared checker function can be used in a schema. 
-
-More interesting schemas can be built. This one checks for an array of elements that are expected to pass the `Point` checker function. 
-
+##### not(schema) - Inverts the result of the check
 ```js
-check([ Point ])([{ x: 1, y: 1 }, { x: 10, y: 10 }])
-check([ Point ])([{ x: 10, xyz: 10 },{ x: 'a', y: 1 } ]) 
+assert(not(any()))(1) /* always false */
+check(not(null))(null) 
 /*
 TypeError:
- - 2 invalid elements in array [{"x":10,"xyz":10},{"x":"a","y":1}]:
-     - Invalid property in object {"x":10,"xyz":10}:
-         - Expected key 'y': Was undefined
-     - Invalid property in object {"x":"a","y":1}:
-         - Expected number: Got string 'a'
+ - Invalid type: custom check failed on null:
+     - Expected not null: Got null
+*/
+```
+##### either(schema_a, schema_b) - First tests with the first schema. If it fails, tests with the second schema. 
+```js
+assert(either(String, Number))(1) /* true */
+assert(either(String, Number))('a') /* true */
+assert(either(String, Number))( undefined ) /* false */
+```
+##### nonEmpty - Specify a non-empty array
+```js
+check(nonEmpty([]))([]) 
+/*
+TypeError:
+ - Invalid type: custom check failed on []:
+     - Expected non-empty array.
+*/
+```
+#### Objects
+
+If a key declared in the schema is not in the object, an error is thrown.
+
+```js
+validate_point({ x: 10, oups: 15 }) 
+/*
+TypeError:
+ - Invalid properties in object {"x":10,"oups":15}:
+     - Expected key 'y': Was undefined
 */
 ```
 
-
-Of course, you can stil check for functions as values
+Keys not declared in the schema are ignored. 
 
 ```js
-check([Function])([console.log, a => {console.log(a)}])
+validate_point({
+    x: 10, 
+    y: 15, 
+    some_other_key: 'some_other value'
+})
 ```
-___
