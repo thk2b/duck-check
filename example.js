@@ -1,3 +1,5 @@
-const check = require('./index')
+const {assert, check} = require('./index')
 
-check([Function])([console.log, a => {console.log(a)}, ''])
+const asserter = assert(Number)
+
+check([asserter])([1,2,'3'])

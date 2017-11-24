@@ -1,3 +1,6 @@
-const check = require('./src')
+const { check, assert } = require('./src')
 
-module.exports = check
+module.exports = {
+    check, 
+    assert
+}

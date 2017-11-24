@@ -3,10 +3,11 @@ const {
     check_object,
     check_function,
     check,
-    _check
+    _check,
+    assert
 } = require('../check')
 
-describe('public check', () => {
+describe('private check', () => {
     it('should accept a constructor', () => {
         expect( () => _check(Number, 1) )
             .not.toThrow()
@@ -141,6 +142,15 @@ describe('check', () => {
         expect(() => _check(schema, [{a: 1, b: 1}, {a: 123, b: 'abc'}]))
             .toThrow()
     })
+    it('should handle positional arrays with objects', () => {
+        const schema = [{a: Number}, {b: String}]
+        expect(() => _check(schema, [{a: 1}, {b: 'a'}]))
+            .not.toThrow()
+        expect(() => _check(schema,  [{c: 1}, {b: 'a'}]))
+            .toThrow()
+        expect(() => _check(schema,  [{a: 1}, {b: 1}]))
+            .toThrow()
+    })
     it('should handle deep nested mixed objects and arrays', () => {
         const schema = [{
             a: Number, 
@@ -236,16 +246,21 @@ describe('checking with falsy values', () => {
     })
 })
 
-describe('check currying', () => {
-    it('should return a function', () => {
-        expect(typeof check({}))
-            .toBe('function')
-    })
-    it('the returned function should test things', () => {
-        const checker = check({a: Number, b: Number})
-        expect(() => checker({a: 1, b: 2}))
+describe('using assert function in schema and using check', () => {
+    it('should take an assert function', () => {
+        const asserter = assert([Number, String])
+    
+        expect( () => check(asserter)([1, 's']))
             .not.toThrow()
-        expect(() => checker({b: 'a', b: 2}))
+        expect( () => check({a: asserter, b: Number})({a:[1, 's'], b: 1}))
+            .not.toThrow()
+        expect( () => check({a: asserter, b: Number})({a:['1', 's'], b: 1}))
+            .toThrow()
+        expect( () => check({a: asserter, b: Number})({a:['1', 's'], b: 1}))
+            .toThrow()
+    })
+    it('should take any anonymous function that performs a check', () => {
+        expect( () => check(() => 1 === 2 )([1, 's']))
             .toThrow()
     })
 })

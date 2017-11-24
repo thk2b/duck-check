@@ -3,7 +3,7 @@ const { error_message, generate_error } = require('./errors')
 
 
 /**
- * Public facing curried function 
+ * Public function. Checks if the duck matches the schema 
  * @param {*} schema - Schema declaration 
  * @returns {Function} - check function
  */
@@ -11,18 +11,39 @@ function check(schema){
     /**
      * Check function
      * @param {*} duck – Any object to be checked against the schema
-     * @param {Boolean} _generate_message - Tell the checker function not to produce an error message. See check_function
+     * @param {Boolean} throw_raw_error  - Private - dirty hack to allow passing check functions in a schema
+     * @return {undefined} - Returns undefined or throws a TypeError.
      */
-    return (duck, _generate_message = true) => {
+    return (duck, _throw_raw_error = false) => {
         try {
             _check(schema, duck)
         } catch (e) {
-            if(_generate_message){
-                throw new TypeError(error_message(e) + '\n\n')
-            } else {
+            if(_throw_raw_error){
                 throw e
             }
+            throw new TypeError(error_message(e) + '\n\n')
         }
+    }
+}
+
+/**
+ * Public function. 
+ * @param {*} schema - Schema declaration 
+ * @returns {Function} - check function
+ */
+function assert(schema){
+    /**
+     * @param {*} duck – Any object to be checked against the schema
+     * @param {Boolean} throw_raw_error  - Private - dirty hack to allow passing check functions in a schema
+     * @return {Boolean} - Returns false if in assert mode and the test fails.
+     */
+    return duck => {
+        try {
+            _check(schema, duck)
+        } catch (e) {
+            return false
+        }
+        return true
     }
 }
 
@@ -140,16 +161,26 @@ function check_array(schema, arr){
  * @param {*} value
  */
 function check_function(fn, value){
+    let ret /* store return value in case the function is an assertion */
     try {
-        fn(value, false)
+        ret = fn(value, true)
     } catch (e){
         throw e
+    }
+    if(ret === false){
+        throw {
+            // TODO: write better error message
+            message: `Invalid element: assertion failed`
+        }
     }
 }
 
 module.exports = {
-    check, /* only public function */
-    _check, /* export for testing */
+    /* public */
+    check, 
+    assert,
+     /* private - export for testing */
+    _check,
     check_array,
     check_object,
     check_function,
