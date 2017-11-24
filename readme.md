@@ -16,7 +16,7 @@ npm install --save duck-check
 ```
 ```js
 
-const check = require('duck-check')
+const { check, assert } = require('duck-check')
 
 check(Number)(1)
 check(Number)(NaN) 
@@ -25,6 +25,9 @@ check(Number)(NaN)
 TypeError:
  - Expected number: Got NaN
 */
+
+assert(Number)(1) /* true */
+assert(Number)('a') /* false */
 
 check(Boolean)(true)
 check(Boolean)('very true')
