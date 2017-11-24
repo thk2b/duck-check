@@ -55,16 +55,20 @@ function assert(schema){
  */
 function _check(schema, duck){
     let schema_type = get_type(schema)
+    let duck_type = get_type(duck)
+
     if(schema_type === 'function'){
+        if(duck_type === 'object' && duck instanceof schema){
+            duck_type = schema.name.toLowerCase()
+        }
         schema_type = schema.name.toLowerCase()
     }
-    const duck_type = get_type(duck)
-
+    
     if(schema_type !== duck_type){
         if(!(
             schema_type === 'anonymous_function' || 
         /* assume it's a check() function, so ignore the differentce in types */
-            schema_type === 'function' && duck_type === 'anonymous_function'
+            schema_type === 'function' && duck_type === 'anonymous_function' 
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
             let value = ` '${duck}'`

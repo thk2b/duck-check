@@ -62,6 +62,14 @@ describe('assert', () => {
         expect( assert(schema)( fn))
             .toBe(false)
     })
+    it('should handle finding instances of any non-primitive constructor', () => {
+        const schema = [Date, Audio]
+        expect(assert(schema)([new Date(), new Audio()]))
+            .toBe(true)
+        expect(assert(schema)(['a', new Audio()]))
+            .toBe(false)
+    })
+
     it('should handle nested objects', () => {
         const schema = {a: {b: Number, c: Boolean}}
         expect( assert(schema)( {a: {b: 1, c: true}}))

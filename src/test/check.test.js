@@ -151,6 +151,14 @@ describe('check', () => {
         expect(() => _check(schema,  [{a: 1}, {b: 1}]))
             .toThrow()
     })
+    it('should handle finding instances of any non-primitive constructor', () => {
+        const schema = [Date, Audio]
+        expect(() => _check(schema, [new Date(), new Audio()]))
+            .not.toThrow()
+        expect(() => _check(schema,  ['a', new Audio()]))
+            .toThrow()
+    })
+
     it('should handle deep nested mixed objects and arrays', () => {
         const schema = [{
             a: Number, 
