@@ -5,6 +5,13 @@ A minimalist runtime type checking utility.
 [![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
+### v1.1 TODO
+
+[x] Assert function: retrurns a Boolean instead of throwing a TypeError.
+[x] Support checking for instances of a class. Usage: `check(Date)(new Date())`.
+[ ] Add modifiers. Usage: `either(Number,null)`, `not(null)`
+[ ] Update Docs and examples. Add API section to docs. Work with jsdocs
+
 ### Usage:
 
 #### Quick Start
@@ -241,21 +248,4 @@ Of course, you can stil check for functions as values
 ```js
 check([Function])([console.log, a => {console.log(a)}])
 ```
-___
-
-<b>TODO:</b>
-
-🚧 core:
-- [ ] Write `validate_schema`
-
-
-🎨 printing:
-- [ ] Print schema 
-
-🌐 share:
-- [ ] Write Documentation
-
-🏆 possible improvments: 
-- [ ] Check (and improve) performance 
-- [x] Batch errors in array and object checkers: instead of throwing after first error is found, run through the rest of the array / object and find all errors.
 ___
