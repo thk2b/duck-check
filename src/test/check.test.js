@@ -160,6 +160,12 @@ describe('check', () => {
             .not.toThrow()
         expect(() => _check(schema,  ['a', new Audio()]))
             .toThrow()
+        expect(() => _check(Date, new Date()))
+            .not.toThrow()
+        expect(() => _check(Date, 1))
+            .toThrow()
+        expect(() => _check(String, new Date()))
+            .toThrow()
     })
 
     it('should handle deep nested mixed objects and arrays', () => {

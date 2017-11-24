@@ -24,9 +24,9 @@ const error_messages = {
         ? `Invalid property in object ${JSON.stringify(obj)}:`
         : `${n_errors} invalid properties in object ${JSON.stringify(obj)}:`
     ),
-    6: (duck) => `Invalid type: custom assertion failed on ${JSON.stringify(duck)}`, // TODO: improve this message
+    6: (duck) => `Invalid type: custom check failed on ${JSON.stringify(duck)}`, // TODO: improve this message
     7: (class_name, duck_type) => ( duck_type === 'object'
-        ? `Expected instance of class ${schema_type}`
+        ? `Expected instance of class ${class_name}`
         :`Expected instance of ${class_name}: Got ${duck_type}`
     ),
     8: (element_type) => `Expected array. Was empty`

@@ -20,11 +20,11 @@ describe('modifier either', ()=>{
         
         const checker = check({
             a: either(null, String), 
-            b: either([Date], [Number])
+            b: either([String], [Number])
         })
         expect(() => checker({
             a: null,
-            b: [new Date(), new Date()]
+            b: ['a', 'a']
         })).not.toThrow()
         expect(() => checker({
             a: 'null',
@@ -32,7 +32,7 @@ describe('modifier either', ()=>{
         })).not.toThrow()
         expect(() => checker({
             a: null,
-            b: [1, new Date()]
+            b: [1, 'a']
         })).toThrow()
     })
 })

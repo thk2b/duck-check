@@ -11,7 +11,52 @@ function _check(schema, duck){
     const schema_type = get_type(schema)
     const duck_type = get_type(duck)
 
-    if(schema_type === duck_type){
+    if(schema_type !== duck_type){
+        if( schema_type === 'function'){
+        /* is a constructor such as Number, String, Function 
+           or a check or assert function 
+        */
+            const name = schema.name.toLowerCase()
+            if(name !== duck_type){
+                if(!(duck instanceof schema)){
+                    throw {
+                        message: error_messages[1](name, duck_type, duck)
+                    }
+                }
+            }
+
+            switch(duck_type){
+                case 'number':
+                case 'string':
+                case 'boolean':
+                    if(name !== duck_type){
+                        throw{
+                            message: error_messages[1](name, duck_type, duck)
+                        }
+                    }
+                    break
+                case 'object': 
+                    if(!(duck instanceof schema)){
+                        throw {
+                            message: error_messages[7](name, duck_type)
+                        }
+                    }
+                    break
+                case 'anonymous_function':
+                    break
+                default:
+                    throw {
+                        message: error_messages[1](name, duck_type, duck)
+                    }
+            }
+        } else if (schema_type === 'anonymous_function'){
+            check_function(schema, duck)
+        } else {
+            throw {
+                message: error_messages[1](schema_type, duck_type, duck)
+            }
+        }
+    } else {
         switch(schema_type){
             case 'array':
                 check_array(schema, duck)
@@ -21,41 +66,6 @@ function _check(schema, duck){
                 break
             default:
                 break
-        }
-    } else if( schema_type === 'function'){
-        /* is a constructor such as Number, String, Function 
-           or a check or assert function 
-        */
-        const name = schema.name.toLowerCase()
-        switch(duck_type){
-            case 'object': 
-                if(! duck instanceof schema){
-                    throw {
-                        message: error_messages[7](schema.name, duck_type)
-                    }
-                }
-                break
-            case 'number':
-            case 'string':
-            case 'boolean':
-            if(name !== duck_type){
-                throw{
-                    message: error_messages[1](name, duck_type, duck)
-                }
-            }
-            break
-            case 'anonymous_function':
-                break
-            default:
-                throw{
-                    message: error_messages[1](name, duck_type, duck)
-                }
-        }
-    } else if (schema_type === 'anonymous_function'){
-        check_function(schema, duck)
-    } else {
-        throw {
-            message: error_messages[1](schema_type, duck_type, duck)
         }
     }
 }
