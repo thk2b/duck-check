@@ -1,5 +1,5 @@
 const { either } = require('../modifiers')
-const { check, assert } = require('../check')
+const { check, assert } = require('../index')
 
 describe('modifier either', ()=>{
     it('should work with simple assertions', () => {

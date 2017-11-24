@@ -2,10 +2,13 @@ const {
     check_array,
     check_object,
     check_function,
-    check,
     _check,
-    assert
 } = require('../check')
+
+const {
+    check,
+    assert
+} = require('../index')
 
 describe('private check', () => {
     it('should accept a constructor', () => {

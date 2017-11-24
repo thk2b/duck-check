@@ -1,4 +1,4 @@
-const { assert } = require('../check')
+const { assert } = require('../index')
 
 describe('assert', () => {
     it('should accept a constructor', () => {

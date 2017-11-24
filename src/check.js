@@ -1,52 +1,6 @@
 const { get_type } = require('./get_type')
 const { error_message, generate_error } = require('./errors')
 
-
-/**
- * Public function. Checks if the duck matches the schema 
- * @param {*} schema - Schema declaration 
- * @returns {Function} - check function
- */
-function check(schema){
-    /**
-     * Check function
-     * @param {*} duck – Any object to be checked against the schema
-     * @param {Boolean} throw_raw_error  - Private - dirty hack to allow passing check functions in a schema
-     * @return {undefined} - Returns undefined or throws a TypeError.
-     */
-    return (duck, _throw_raw_error = false) => {
-        try {
-            _check(schema, duck)
-        } catch (e) {
-            if(_throw_raw_error){
-                throw e
-            }
-            throw new TypeError(error_message(e) + '\n\n')
-        }
-    }
-}
-
-/**
- * Public function. 
- * @param {*} schema - Schema declaration 
- * @returns {Function} - check function
- */
-function assert(schema){
-    /**
-     * @param {*} duck – Any object to be checked against the schema
-     * @param {Boolean} throw_raw_error  - Private - dirty hack to allow passing check functions in a schema
-     * @return {Boolean} - Returns false if in assert mode and the test fails.
-     */
-    return duck => {
-        try {
-            _check(schema, duck)
-        } catch (e) {
-            return false
-        }
-        return true
-    }
-}
-
 /**
  * Private function. 
  * Examines the schema and runs the appropriate checks
@@ -71,7 +25,7 @@ function _check(schema, duck){
             schema_type === 'function' && duck_type === 'anonymous_function' 
         /* the Function constructor was passed and the duck is an anonymous function, it is valid*/
         )){
-            let value = ` '${duck}'`
+            let value = `'${duck}'`
             switch(duck_type){
                 case 'null':
                 case 'undefined':
@@ -80,7 +34,7 @@ function _check(schema, duck){
             }
 
             throw {
-                message: `Expected ${ schema_type }: Got ${ duck_type.replace('_', ' ') }${value}`
+                message: `Expected ${ schema_type }: Got ${ duck_type.replace('_', ' ') } ${value}`
             }
         }
     }
@@ -180,10 +134,6 @@ function check_function(fn, value){
 }
 
 module.exports = {
-    /* public */
-    check, 
-    assert,
-     /* private - export for testing */
     _check,
     check_array,
     check_object,
