@@ -7,10 +7,10 @@ A minimalist runtime type checking utility.
 
 ### v1.1 TODO
 
-[x] Assert function: retrurns a Boolean instead of throwing a TypeError.
-[x] Support checking for instances of a class. Usage: `check(Date)(new Date())`.
-[ ] Add modifiers. Usage: `either(Number,null)`, `not(null)`
-[ ] Update Docs and examples. Add API section to docs. Work with jsdocs
+- [x] Assert function: retrurns a Boolean instead of throwing a TypeError.
+- [x] Support checking for instances of a class. Usage: `check(Date)(new Date())`.
+- [ ] Add modifiers. Usage: `either(Number,null)`, `not(null)`
+- [ ] Update Docs and examples. Add API section to docs. Work with jsdocs
 
 ### Usage:
 
