@@ -16,7 +16,7 @@ function check(schema){
      */
     return (duck, _throw_raw_error=false) => {
         try {
-            _check(schema, duck)
+            return _check(schema, duck)
         } catch (e) {
             if(_throw_raw_error) throw e
             throw new TypeError(generate_error_message(e) + '\n\n')

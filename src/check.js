@@ -68,6 +68,7 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
                 break
         }
     }
+    return duck
 }
 
 /**

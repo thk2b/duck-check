@@ -26,6 +26,12 @@ describe('private check', () => {
             .not.toThrow()
 
     })
+
+    it('should return duck', () => {
+        const A = check({a: String})
+        const a = A({a:'a'})
+        expect(a).toEqual({a:'a'})
+    })
 })
 
 describe('check_object', () => {

@@ -3,5 +3,6 @@ const { not, any, nonEmpty } = require('./index').modifiers
 
 const Person = check({name: String, age: Number})
 
-check([Person])([{name: 'jane', age: 30}, {name: 'john', age: '01'}])
 
+let p = Person({name: 'j', age: 12})
+console.log(p)
