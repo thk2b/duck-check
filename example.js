@@ -1,3 +1,3 @@
-const check = require('./index')
+const {assert, check, modifiers} = require('./index')
+const {add, any, not, nonEmpty} =  modifiers 
 
-check([Function])([console.log, a => {console.log(a)}, ''])
