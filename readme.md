@@ -8,7 +8,7 @@ A minimalist runtime type checking utility.
 ### New in v1.1.0
 - Assert function: retrurns a Boolean instead of throwing a TypeError.
 - Support checking for instances of a class. Usage: `check(Date)(new Date())`.
-- Modifiers (`not`, `either`, `nonEmpty`, `any`.
+- Modifiers (`not`, `either`, `nonEmpty`, `any`).
 
 ## Usage:
 ### Installation
