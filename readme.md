@@ -5,12 +5,11 @@ A minimalist runtime type checking utility.
 [![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
-### v1.1 TODO
+### New in v1.1
 
-- [x] Assert function: retrurns a Boolean instead of throwing a TypeError.
-- [x] Support checking for instances of a class. Usage: `check(Date)(new Date())`.
-- [x] Add modifiers. Usage: `either(Number,null)`, `not(null)`
-- [ ] Update Docs and examples. Add API section to docs. Work with jsdocs
+- Assert function: retrurns a Boolean instead of throwing a TypeError.
+- Support checking for instances of a class. Usage: `check(Date)(new Date())`.
+- Modifiers (`not`, `either`, `nonEmpty`, `any`.
 
 ## Usage:
 ### Installation
@@ -322,7 +321,8 @@ assert(either(String, Number))(1) /* true */
 assert(either(String, Number))('a') /* true */
 assert(either(String, Number))( undefined ) /* false */
 ```
-##### nonEmpty - Specify a non-empty array
+##### nonEmpty(array) - Specify a non-empty array
+##### non_empty(array) - Specify a non-empty array
 ```js
 check(nonEmpty([]))([]) 
 /*
