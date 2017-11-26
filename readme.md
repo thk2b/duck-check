@@ -6,7 +6,6 @@ A minimalist runtime type checking utility.
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
 ### New in v1.1
-
 - Assert function: retrurns a Boolean instead of throwing a TypeError.
 - Support checking for instances of a class. Usage: `check(Date)(new Date())`.
 - Modifiers (`not`, `either`, `nonEmpty`, `any`.
@@ -99,6 +98,7 @@ TypeError:
  - Invalid type: custom check failed on undefined:
      - Expected either string or number: Got undefined
 */
+
 ```
 
 ### Guide
