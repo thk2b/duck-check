@@ -1,8 +1,3 @@
-const {assert, check} = require('./index')
-const { not, any, nonEmpty } = require('./index').modifiers
+const {assert, check, modifiers} = require('./index')
+const {add, any, not, nonEmpty} =  modifiers 
 
-const Person = check({name: String, age: Number})
-
-
-let p = Person({name: 'j', age: 12})
-console.log(p)

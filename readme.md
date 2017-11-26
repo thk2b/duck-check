@@ -94,7 +94,12 @@ assert({x: any()})({abc: 1}) /* false */
 
 assert(either(String, Number))(1) /* true */
 assert(either(String, Number))('a') /* true */
-assert(either(String, Number))(undefined) /* false */
+check(either(String, Number))(undefined) 
+/*
+TypeError:
+ - Invalid type: custom check failed on undefined:
+     - Expected either string or number: Got undefined
+*/
 ```
 
 ### Guide
@@ -102,18 +107,18 @@ assert(either(String, Number))(undefined) /* false */
 
 In Node:
 ```js
-const check = require('duck-check')
+const { check, assert, modifiers } = require('duck-check')
 ```
 
 ES6 modules:
 
 ```js
-import check from 'duck-check'
+import { check, assert, modifiers } from 'duck-check'
 ```
 
 #### API
 
-`duck-check` exposes two functions and an object.
+`duck-check` exposes two functions.
 
 ##### check(schema)(data)
 ##### assert(schema)(data) 
@@ -148,15 +153,16 @@ We will use the following naming convention:
 ```js
 const Person = check({name: String, age: Number})
 ```
-Warning: Do not use this naming convention in a project involving classes.
+Warning: Do not use this naming convention in a project involving object-oriented classes.
 
 We refer to the function returned by `check` or `assert` as a 'checker function'. 
-Any checker function can be declared in a schema. 
+
+Any checker function can be used anywhere in a schema. 
 For instance, we can declare an array of `Person`
 
 ```js
 assert([Person])([{name: 'jane', age: 30}, {name: 'john', age: 60}]) /* true */
-check([Person])([{name: 'jane', age: 30}, {name: 'john', age: NaN}]) 
+check([Person])([{name: 'jane', age: 30}, {name: 'john's, age: NaN}]) 
 /*
 TypeError:
  - Invalid element in array [{"name":"jane","age":30},{"name":"john","age":"01"}]:
@@ -176,20 +182,24 @@ assert([checker])([1,2,3]) /* true */
 check([asserter])([1,2,3]) 
 
 assert([checker])([1,2,'a']) /* false */
-check([asserter])([1,2,3]) /* TypeError */
+check([asserter])([1,2,'a']) /* TypeError */
 ```
 
-This means that any anonymous function in the schema that returns false causes the test to fail. 
+Any anonymous function in a schema will be called with the object being tested. If it returns false or throws an error, the test is considered failed.
 
 #### Arrays
 
 `duck-check` will check all the elements in the array and find all invalid ones.
 There are two ways of declaring arrays.
 
-The followinf declaration means we want an array of numbers of any length, potentially empty. Use the `nonEmpty` modifier to declare a non-empty array, see the modifier section below.
+The following declaration means we want an array of numbers, of any length, potentially empty. 
+Use the `nonEmpty` modifier to declare a non-empty array, see the modifier section for more details.
+
+Note that arrays can be nested.
 
 ```js
-check([ Number ])([1,2,3])
+check([Number])([1,2,3])
+assert([Number])(1) /* false */
 check([[Number]])([[1,'2','a'],[1,2,'a']]) 
 /*
 TypeError:
@@ -200,10 +210,10 @@ TypeError:
      - Invalid element in array [1,2,"a"]:
          - Expected number: Got string 'a'
 */
-assert([Number])(1) /* false */
 ```
  
 The following declaration means we want an array with a number in first position, an a string in second.
+
 This refered to as a positional array, since the position of element matters.
 
 ```js
@@ -235,7 +245,57 @@ TypeError:
 */
 ```
 
+#### Objects
+
+If a key declared in the schema is not in the object, an error is thrown.
+
+```js
+const Point = check({x: Number, y: Number})
+Point({ x: 10, oups: 15 }) 
+/*
+TypeError:
+ - Invalid properties in object {"x":10,"oups":15}:
+     - Expected key 'y': Was undefined
+*/
+```
+
+Keys not declared in the schema are ignored. 
+
+```js
+Point({
+    x: 10, 
+    y: 15, 
+    some_other_key: 'some_other value'
+})
+```
+
+You can test for a class instance by passing the constructor in the schema. 
+
+
+```js
+assert(Date)(new Date())
+assert(Date)('april fools') /* false */
+```
+
+This feature is added as a convenience. However, it is not duck-typing as such and may be beyond the intended scope of the project.
+
+#### Composing array and objects
+
+In a Scheam, an array can naturally contain objects and vic-versa.
+
+```js
+assert([{x: Number, y: Number}])([{x: 1, y: 2}, {x: 3, y: 4}]) /* true */
+assert([{x: Number, y: Number}])([{x: 1, y: NaN}, {x: 3, y: 4}]) /* false */
+```
+
 #### Modifiers
+
+An object containing all modifiers is exported by duck-check. 
+
+```js
+const { modifiers } = require('duck-check')
+const { add, any, not, nonEmpty } = modifiers
+```
 
 Modifiers are called with schemas and return anonymous functions that take the data being tested. 
 There are four modifiers: 
@@ -270,26 +330,4 @@ TypeError:
  - Invalid type: custom check failed on []:
      - Expected non-empty array.
 */
-```
-#### Objects
-
-If a key declared in the schema is not in the object, an error is thrown.
-
-```js
-validate_point({ x: 10, oups: 15 }) 
-/*
-TypeError:
- - Invalid properties in object {"x":10,"oups":15}:
-     - Expected key 'y': Was undefined
-*/
-```
-
-Keys not declared in the schema are ignored. 
-
-```js
-validate_point({
-    x: 10, 
-    y: 15, 
-    some_other_key: 'some_other value'
-})
 ```
