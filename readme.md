@@ -86,7 +86,7 @@ TypeError:
      - Expected not null: Got null 
 */
 
-assert(not(not(Number)))(Number) /* true */
+assert(not(not(Number)))(1) /* true */
 assert({x: any()})({x: 1}) /* true */
 assert({x: any()})({abc: 1}) /* false */
 
