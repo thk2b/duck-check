@@ -211,7 +211,7 @@ describe('private _check on nested schemas', () => {
     })
     it('should return true if nested object matches schema', () => {
         const sch = {a: Number, b: { c: String, d: Date }}
-        const obj = { a: 1, b: { c: 'a', e: new Date() }}
+        const obj = {a: 1, b: { c: 'a', d: new Date() }}
         expect(
             _check(sch, obj)
         ).toBe(true)
