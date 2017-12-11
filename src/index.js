@@ -1,5 +1,4 @@
 const { _check } = require('./_check')
-const { generate_error_message } = require('./errors')
 const modifiers = require('./modifiers')
 
 /**
@@ -18,7 +17,7 @@ function check(schema){
         if( _check(schema, duck)) {
             return
         } else {
-            throw new TypeError(generate_error_message(schema, duck))
+            throw new TypeError(`Type check failed.\n\tExpected: ${schema}\n\tGot: ${duck}`)
         }
     }
 }
