@@ -14,12 +14,11 @@ function check(schema){
      * @param {Boolean} _throw_raw_error - Hack to allow a clean error message to be produced when using a check function in a schema
      * @return {undefined} - Returns undefined or throws a TypeError.
      */
-    return (duck, _throw_raw_error=false) => {
-        try {
-            return _check(schema, duck)
-        } catch (e) {
-            if(_throw_raw_error) throw e
-            throw new TypeError(generate_error_message(e) + '\n\n')
+    return duck => {
+        if( _check(schema, duck)) {
+            return
+        } else {
+            throw new TypeError(generate_error_message(schema, duck))
         }
     }
 }
@@ -36,17 +35,13 @@ function assert(schema){
      * @return {Boolean} - Returns false if in assert mode and the test fails.
      */
     return duck => {
-        try {
-            _check(schema, duck)
-        } catch (e) {
-            return false
-        }
-        return true
+        return  _check(schema, duck)
     }
 }
 
 module.exports = {
     check, 
     assert,
+    is: assert,
     modifiers
 }

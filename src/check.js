@@ -17,11 +17,9 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
            or a check or assert function 
         */
             const name = schema.name.toLowerCase()
-            if(name !== duck_type){
-                if(!(duck instanceof schema)){
-                    throw {
-                        message: error_messages[1](name, duck_type, duck)
-                    }
+            if( name !== duck_type){
+                if( !(duck instanceof schema)){
+                    return false
                 }
             }
 
@@ -29,41 +27,30 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
                 case 'number':
                 case 'string':
                 case 'boolean':
-                    if(name !== duck_type){
-                        throw{
-                            message: error_messages[1](name, duck_type, duck)
-                        }
+                    if( name !== duck_type){
+                        return false
                     }
-                    break
+                    return true
                 case 'object': 
-                    if(!(duck instanceof schema)){
-                        throw {
-                            message: error_messages[7](name, duck_type)
-                        }
+                    if( !(duck instanceof schema)){
+                        return false
                     }
-                    break
+                    return true
                 case 'anonymous_function':
-                    break
                 default:
-                    throw {
-                        message: error_messages[1](name, duck_type, duck)
-                    }
+                    return false
             }
-        } else if (schema_type === 'anonymous_function'){
-            check_function(schema, duck)
+        } else if ( schema_type === 'anonymous_function'){
+            return check_function(schema, duck)
         } else {
-            throw {
-                message: error_messages[1](schema_type, duck_type, duck)
-            }
+            return false
         }
     } else {
         switch(schema_type){
             case 'array':
-                check_array(schema, duck)
-                break
+                return check_array(schema, duck)
             case 'object':
-                check_object(schema, duck)
-                break
+                return check_object(schema, duck)
             default:
                 break
         }
@@ -77,25 +64,12 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
  * @param {Object} schema 
  */
 function check_object(schema, obj){
-    let errors = []
     for(let key in schema){
-        try{
             const val = obj[key]
             if(typeof val === 'undefined'){
-                throw {
-                    message: error_messages[4](key)
-                }
+                return false
             }
-            _check(schema[key], obj[key])
-        } catch (e) {
-            errors.push(e)
-        }
-    }
-    if(errors.length > 0){
-        throw {
-            message: error_messages[5](obj, errors.length),
-            data: errors
-        }
+            return _check(schema[key], obj[key])
     }
 }
 
@@ -105,36 +79,23 @@ function check_object(schema, obj){
  * @param {Array} arr 
  */
 function check_array(schema, arr){
-    let errors = []
-
     if(schema.length === 1){ /* all elements are of one type */
-        arr.forEach( el => {
-            try {
-                _check(schema[0], el)    
-            } catch (e) {
-                errors.push(e)
-            }
-        })
-        if(errors.length > 0){
-            throw {
-                message: error_messages[2](arr, errors.length),
-                data: errors
+        for(let el of arr){
+            if( !_check(schema[0], el )){
+                return false
             }
         }
-    } else if (schema.length >= 1){ /* positional array where each element is of a specific type */
-        schema.forEach( (si, i) => {
-            try {
-                _check(si, arr[i])
-            } catch (e) {
-                errors.push(e)
-            }
-        })
-        if(errors.length > 0){
-            throw {
-                message: error_messages[3](arr, errors.length),
-                data: errors
+        return true
+    } else if (schema.length > 1){ /* positional array where each element is of a specific type */
+        if(arr.length < schema.length){
+            return false
+        }
+        for(let i = 0; i < arr.length; i++){
+            if( !_check(schema[i], arr[i] )){
+                return false
             }
         }
+        return true
     }
 }
 
@@ -144,16 +105,13 @@ function check_array(schema, arr){
  * @param {*} value
  */
 function check_function(fn, value){
-    let ret /* store return value in case the function is an assertion */
-    
+    let ret 
     try {
         ret = fn(value, true)
-    } catch (e){
-        throw { message: error_messages[6](value), data: [e] }
+    } catch(e) {
+        return false
     }
-    if(ret === false){
-        throw { message: error_messages[6](value)}
-    }
+    return ret
 }
 
 module.exports = {

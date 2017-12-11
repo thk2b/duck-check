@@ -5,10 +5,9 @@
 [![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
-### New in v1.1.0
-- Assert function: retrurns a Boolean instead of throwing a TypeError.
-- Support checking for instances of a class. Usage: `check(Date)(new Date())`.
-- Modifiers (`not`, `either`, `nonEmpty`, `any`).
+### New in v2.0.0
+- REMOVED: Error batching to improve efficiency.
+- REMOVED: Complex error messages thronw by `assert` to improve efficiency.
 
 ## Usage:
 ### Installation
