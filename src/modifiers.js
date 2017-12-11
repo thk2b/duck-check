@@ -1,5 +1,5 @@
 const { _check } = require('./_check')
-const { get_type } = require('./get_type')
+const get_type = require('./get_type')
 const { error_messages } = require('./errors')
 
 /**

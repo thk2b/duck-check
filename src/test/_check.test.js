@@ -26,6 +26,26 @@ describe('private _check', () => {
                 _check(falsy, 1)
             ).toBe(false)
         })
+        it(`should return false if array schema is ${falsy}`, () => {
+            expect(
+                _check([Number], falsy)
+            ).toBe(false)
+        })
+        it(`should return false if array schema contains ${falsy}`, () => {
+            expect(
+                _check([Number], [falsy])
+            ).toBe(false)
+        })
+        it(`should return false if object schema is ${falsy}`, () => {
+            expect(
+                _check({a: Number}, falsy)
+            ).toBe(false)
+        })
+        it(`should return false if object schema contains ${falsy}`, () => {
+            expect(
+                _check({a: Number}, {a: falsy})
+            ).toBe(false)
+        })
     });
 
     it('should return true if duck is a function and schema is the Function constructor', () => {

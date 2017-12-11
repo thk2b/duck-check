@@ -31,11 +31,10 @@ function check(schema){
 function assert(schema){
     /**
      * @param {*} duck – Any object to be checked against the schema
-     * @param {Boolean} throw_raw_error  - Private - dirty hack to allow passing check functions in a schema
      * @return {Boolean} - Returns false if in assert mode and the test fails.
      */
     return duck => {
-        return  _check(schema, duck)
+        return _check(schema, duck)
     }
 }
 

@@ -12,9 +12,9 @@ const { error_messages } = require('./errors')
 function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(duck)){
     switch(schema_type){
         case 'array':
-            return _check_array(schema, duck)
+            return duck_type === 'array' ?_check_array(schema, duck) : false
         case 'object':
-            return _check_object(schema, duck)
+            return duck_type === 'object' ? _check_object(schema, duck) : false
         case 'anonymous_function':
             return _check_function(schema, duck)
         case 'function':            
@@ -64,6 +64,7 @@ function _check_array(schema, arr){
  * @param {*} duck
  */
 function _check_function(fn, duck){
+    if(fn.name === 'Boolean') return false /* hack */
     try {
         return fn(duck) === true
     } catch(e) {
