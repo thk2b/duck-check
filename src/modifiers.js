@@ -1,7 +1,4 @@
-const { assert } = require('../index')
-
-const { _check } = require('./_check')
-const get_type = require('./get_type')
+const { assert } = require('./main')
 
 /**
  * Throws if the test passes. Does nothing if the test fails.

@@ -8,7 +8,10 @@ const get_type = require('./get_type')
  * @param {String} schema_type - Optional type - In modifiers, it is necesary to know the type before calling check. So it is more efficient to get them once and pass them
  * @param {String} duck_type - idem
  */
-function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(duck)){
+function _check(schema, duck){
+    const schema_type = get_type(schema)
+    const duck_type = get_type(duck)
+
     switch(schema_type){
         case 'array':
             return duck_type === 'array' ?_check_array(schema, duck) : false
