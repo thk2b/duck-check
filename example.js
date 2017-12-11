@@ -2,3 +2,5 @@
 // const {add, any, not, nonEmpty} =  modifiers 
 
 const { _check } = require('./src/_check')
+
+console.log(_check(Function, () => {}))

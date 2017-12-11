@@ -1,4 +1,4 @@
-const { get_type } = require('./get_type')
+const get_type = require('./get_type')
 const { error_messages } = require('./errors')
 
 /**
@@ -10,51 +10,21 @@ const { error_messages } = require('./errors')
  * @param {String} duck_type - idem
  */
 function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(duck)){
-    if(schema_type !== duck_type){
-        if( schema_type === 'function'){
-        /* is a constructor such as Number, String, Function 
-           or a check or assert function 
-        */
-            const name = schema.name.toLowerCase()
-            if( name !== duck_type){
-                if( !(duck instanceof schema)){
-                    return false
-                }
-            }
-
-            switch(duck_type){
-                case 'number':
-                case 'string':
-                case 'boolean':
-                    if( name !== duck_type){
-                        return false
-                    }
-                    return true
-                case 'object': 
-                    if( !(duck instanceof schema)){
-                        return false
-                    }
-                    return true
-                case 'anonymous_function':
-                default:
-                    return false
-            }
-        } else if ( schema_type === 'anonymous_function'){
+    switch(schema_type){
+        case 'array':
+            return _check_array(schema, duck)
+        case 'object':
+            return _check_object(schema, duck)
+        case 'anonymous_function':
             return _check_function(schema, duck)
-        } else {
-            return false
-        }
-    } else {
-        switch(schema_type){
-            case 'array':
-                return _check_array(schema, duck)
-            case 'object':
-                return _check_object(schema, duck)
-            default:
-                return true
-        }
+        case 'function':            
+            return schema.name.toLowerCase() === duck_type ?
+                true : duck_type === 'anonymous_function' ? 
+                    true : duck_type === 'object' ? 
+                        duck instanceof schema : false
+        default:
+            return schema_type === duck_type
     }
-    return duck
 }
 
 /**
@@ -78,35 +48,28 @@ function _check_object(schema, obj){
  * @param {Array} arr 
  */
 function _check_array(schema, arr){
-    if(schema.length === 1){ /* all elements are of one type */
-        for(let el of arr){
-            if( !_check(schema[0], el )){
-                return false
-            }
-        }
-        return true
-    } else if (schema.length > 1){ /* positional array where each element is of a specific type */
-        if(arr.length < schema.length){
-            return false
-        }
-        for(let i = 0; i < arr.length; i++){
-            if( !_check(schema[i], arr[i] )){
-                return false
-            }
-        }
-        return true
+    if(schema.length === 1){ 
+        /* array of unique type */
+        return arr.length && arr.findIndex(
+            (el, i) => ! _check(schema[0], el)
+        ) === -1 ? true : false
+    } else if (schema.length > 1){ 
+        /* positional array */
+        return arr.length === schema.length && arr.findIndex(
+            (el, i) => ! _check(schema[i], el)
+        ) === -1 ? true : false
     }
 }
 
 /**
  * Checks if the value passes the check function provided. 
- * @param {Function} fn - the result of a previous `check(schema) call`
+ * @param {Function} fn - the result of a previous `check(schema) call` or a modifier or a custom anonymous function
  * @param {*} value
  */
 function _check_function(fn, value){
     let ret 
     try {
-        ret = fn(value, true)
+        ret = fn(value)
     } catch(e) {
         return false
     }

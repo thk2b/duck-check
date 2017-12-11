@@ -32,7 +32,4 @@ function get_type(duck){
     return type
 }
 
-module.exports = {
-    get_type,
-    is /* for testing */
-}
+module.exports = get_type

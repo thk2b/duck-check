@@ -34,6 +34,12 @@ describe('private _check', () => {
             _check(Function, _fn)
         ).toBe(true)
     })
+    it('should return false if duck is a function and schema is not Function constructor', () => {
+        function _fn(){}
+        expect(
+            _check(String, _fn)
+        ).toBe(false)
+    })
 
     it(`should return true if duck is a custom class constructor and schema is the custom constructor`, () => {
         expect(
@@ -50,14 +56,16 @@ describe('private _check', () => {
 
 describe('private _check on array', () => {
     it('should return true if array matches positional array', () => {
-        const arr = [1,'1', function a(){}]
+        function _fn(){}
+        const arr = [1,'1', _fn]
         const sch = [Number, String, Function]
         expect(
             _check(sch, arr)
         ).toBe(true)
     })
     it('should return false if array does not match positional array', () => {
-        const arr = [1,'1', function a(){}]
+        function _fn(){}
+        const arr = [1,'1', _fn]
         const sch = [Number, String, String]
         expect(
             _check(sch, arr)
