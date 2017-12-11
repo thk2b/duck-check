@@ -1,5 +1,4 @@
 const get_type = require('./get_type')
-const { error_messages } = require('./errors')
 
 /**
  * Private function. 
