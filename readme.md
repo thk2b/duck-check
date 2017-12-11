@@ -7,11 +7,13 @@
 
 # v2.0.0 TODO:
 
-- [ ] Refactor tests
+- Write docs
+- Publish
 
 ### New in v2.0.0
 - REMOVED: Error batching to improve efficiency.
 - REMOVED: Complex error messages thronw by `assert` to improve efficiency.
+- MODIFIED: Modifier behavior changed. 
 
 
 
