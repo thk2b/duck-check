@@ -41,16 +41,16 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
                     return false
             }
         } else if ( schema_type === 'anonymous_function'){
-            return check_function(schema, duck)
+            return _check_function(schema, duck)
         } else {
             return false
         }
     } else {
         switch(schema_type){
             case 'array':
-                return check_array(schema, duck)
+                return _check_array(schema, duck)
             case 'object':
-                return check_object(schema, duck)
+                return _check_object(schema, duck)
             default:
                 break
         }
@@ -63,7 +63,7 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
  * @param {Object} obj
  * @param {Object} schema 
  */
-function check_object(schema, obj){
+function _check_object(schema, obj){
     for(let key in schema){
             const val = obj[key]
             if(typeof val === 'undefined'){
@@ -78,7 +78,7 @@ function check_object(schema, obj){
  * @param {Array} schema 
  * @param {Array} arr 
  */
-function check_array(schema, arr){
+function _check_array(schema, arr){
     if(schema.length === 1){ /* all elements are of one type */
         for(let el of arr){
             if( !_check(schema[0], el )){
@@ -104,7 +104,7 @@ function check_array(schema, arr){
  * @param {Function} fn - the result of a previous `check(schema) call`
  * @param {*} value
  */
-function check_function(fn, value){
+function _check_function(fn, value){
     let ret 
     try {
         ret = fn(value, true)
@@ -115,8 +115,5 @@ function check_function(fn, value){
 }
 
 module.exports = {
-    _check,
-    check_array,
-    check_object,
-    check_function,
+    _check
 }

@@ -1,4 +1,4 @@
-const { _check } = require('./check')
+const { _check } = require('./_check')
 const { generate_error_message } = require('./errors')
 const modifiers = require('./modifiers')
 
