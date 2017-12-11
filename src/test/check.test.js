@@ -10,6 +10,8 @@ const {
     assert
 } = require('../index')
 
+describe('', () => {})
+
 // describe('private check', () => {
 //     it('should accept a constructor', () => {
 //         expect( _check(Number, 1) )

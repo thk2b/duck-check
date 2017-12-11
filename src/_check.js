@@ -10,7 +10,6 @@ const { error_messages } = require('./errors')
  * @param {String} duck_type - idem
  */
 function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(duck)){
-
     if(schema_type !== duck_type){
         if( schema_type === 'function'){
         /* is a constructor such as Number, String, Function 
@@ -52,7 +51,7 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
             case 'object':
                 return _check_object(schema, duck)
             default:
-                break
+                return true
         }
     }
     return duck

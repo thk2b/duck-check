@@ -1,8 +1,9 @@
 const { _check } = require('../_check')
 
 describe('private _check', () => {
-    [Number, Boolean, String, Function].forEach( constructor => {
+    [Number, Boolean, String].forEach( constructor => {
         it(`should return true if duck is a ${constructor.name} and schema is the ${constructor.name} constructor`, () => {
+            
             expect(
                 _check(constructor, new constructor(1))
             ).toBe(true)
@@ -12,6 +13,26 @@ describe('private _check', () => {
                 _check(constructor, new Date())
             ).toBe(false)
         })
+    });
+
+    [null, undefined, NaN].forEach( falsy => {
+        it(`should return true if duck is ${falsy} and schema is ${falsy}`, () => {
+            expect(
+                _check(falsy, falsy)
+            ).toBe(true)
+        })
+        it(`should return false if duck is not ${falsy} and schema is ${falsy}`, () => {
+            expect(
+                _check(falsy, 1)
+            ).toBe(false)
+        })
+    });
+
+    it('should return true if duck is a function and schema is the Function constructor', () => {
+        function _fn(){}
+        expect(
+            _check(Function, _fn)
+        ).toBe(true)
     })
 
     it(`should return true if duck is a custom class constructor and schema is the custom constructor`, () => {
@@ -25,18 +46,6 @@ describe('private _check', () => {
         ).toBe(false)
     })
 
-    [null, undefined, NaN].forEach( falsy => {
-        it(`should return true if duck is ${falsy} and schema is ${falsy}`, () => {
-            expect(
-                _check(falsy, falsy)
-            ).toBe(true)
-        })
-        it(`should return false if duck is not ${falsy} and schema is ${falsy}`, () => {
-            expect(
-                _check(falsy, 1)
-            ).toBe(false)
-        })
-    })
 })
 
 describe('private _check on array', () => {
