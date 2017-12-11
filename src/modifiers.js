@@ -1,57 +1,45 @@
+const { assert } = require('../index')
+
 const { _check } = require('./_check')
 const get_type = require('./get_type')
-const { error_messages } = require('./errors')
 
 /**
  * Throws if the test passes. Does nothing if the test fails.
- * @param {*} Schema - Any valid schema. Throws if it matches the duck.
+ * @param {*} Schema - Any valid schema. Returns false if it does not match the duck.
  */
 const not = schema => duck => {
-    const schema_type = get_type(schema) 
-    const schema_name = schema_type === 'function' ? schema.name.toLowerCase() : schema_type
-    const duck_type = get_type(duck)
-
-    return !_check(schema, duck, schema_type, duck_type)
+    return !assert(schema)(duck)
 }
 
 /**
  * Throws if both options are invalid
  * @param {*} a - First option. Any valid schema
  * @param {*} b - Second option. Any valid schema
+ * @returns {Boolean} - Returns false if the duck matches neither schemas
  */
 const either = (a, b) => duck => {
-    const type_a = get_type(a) 
-    const name_a = type_a === 'function' ? a.name.toLowerCase() : type_a
-    const type_b = get_type(b) 
-    const name_b = type_b === 'function' ? b.name.toLowerCase() : type_b
-    const duck_type = get_type(duck)
-
-    return _check(a, duck, type_a, duck_type) || _check(b, duck, type_b, duck_type)
+    return assert(a)(duck) || assert(b)(duck)
 }
 
-/**
- * Throws if the array is empty
- * @param {Array}
- */
-const nonEmpty = non_empty = array => duck => {
-    if(Array.isArray(array)){
-        if(duck.length === 0){
-            return false
+function one_of(){
+    return duck => {
+        for(let arg of arguments){
+            if( assert(arg)(duck)) return true
         }
+        return false
     }
-    return _check(array, duck)
 }
 
 /**
- * Wildcard: makes any type pass the test
+ * Wildcard: makes any type pass the test. To be used in an array or object schema
+ * @returns {Boolean} - Always returns true. 
  */
-const any = () => duck => {
-    return true
-}
+const any = () => true
+
 
 module.exports = {
     either, 
     not,
-    non_empty, nonEmpty,
-    any
+    any,
+    one_of, oneOf: one_of
 }
