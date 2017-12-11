@@ -147,7 +147,7 @@ describe('private _check on object', () => {
     })
     it('should return false if the object is empty and the schema is not empty', () => {
         expect(
-            _check({}, {a: Number})
+            _check({a: Number}, {})
         ).toBe(false)
     })
     it('should return true if the object is empty and the schema is empty', () => {

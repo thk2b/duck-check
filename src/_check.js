@@ -34,12 +34,12 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
  */
 function _check_object(schema, obj){
     for(let key in schema){
-            const val = obj[key]
-            if(typeof val === 'undefined'){
-                return false
-            }
-            return _check(schema[key], obj[key])
+        const val = obj[key]
+        if( val === undefined || !_check(schema[key], val)){
+            return false
+        }
     }
+    return true
 }
 
 /**

@@ -3,4 +3,4 @@
 
 const { _check } = require('./src/_check')
 
-console.log(_check(Function, () => {}))
+console.log(_check({}, {a: Number}))
