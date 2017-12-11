@@ -157,23 +157,34 @@ describe('private _check on object', () => {
     })
 })
 
-describe('private _check with anonymous function', () => {
+describe('private _check with function to be called as schema', () => {
     it('should return true if anonymous function does not return false', () => {
-        const fn = () => true
-        expect(
-            _check(fn, 'a')
+        const val = 'a'
+        expect( 
+            _check( d => d === val, 'a')
         ).toBe(true)
     })
     it('should return false if anonymous function return false', () => {
-        const fn = () => false
         expect(
-            _check(fn, 'a')
+            _check(() => false, 'a')
         ).toBe(false)
     })
     it('should return false if anonymous function throws', () => {
-        const fn = () => { throw new Error() }
+        const _fn = () => { throw new Error() }
         expect(
-            _check(fn, 'a')
+            _check(_fn, 'a')
+        ).toBe(false)
+    })
+    it('should return true if schema is a named function and duck passes the test', () => {
+        function _fn(d){ return d > 10}
+        expect(
+            _check(_fn, 11)
+        ).toBe(true)
+    })
+    it('should return true if schema is a named function and duck does not pass the test', () => {
+        function _fn(d){ return d > 10}
+        expect(
+            _check(_fn, 1)
         ).toBe(false)
     })
     it('should return false if duck is an anonymous function and schema is an anonymous function', () => {

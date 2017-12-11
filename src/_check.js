@@ -21,7 +21,7 @@ function _check(schema, duck, schema_type=get_type(schema), duck_type=get_type(d
             return schema.name.toLowerCase() === duck_type ?
                 true : duck_type === 'anonymous_function' ? 
                     true : duck_type === 'object' ? 
-                        duck instanceof schema : false
+                        duck instanceof schema : _check_function(schema, duck)
         default:
             return schema_type === duck_type
     }
@@ -61,16 +61,14 @@ function _check_array(schema, arr){
 /**
  * Checks if the value passes the check function provided. 
  * @param {Function} fn - the result of a previous `check(schema) call` or a modifier or a custom anonymous function
- * @param {*} value
+ * @param {*} duck
  */
-function _check_function(fn, value){
-    let ret 
+function _check_function(fn, duck){
     try {
-        ret = fn(value)
+        return fn(duck) === true
     } catch(e) {
         return false
     }
-    return ret
 }
 
 module.exports = {
