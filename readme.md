@@ -6,9 +6,8 @@
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
 ## New in v2.0.0
-- REMOVED: Error batching to improve efficiency.
-- REMOVED: Complex error messages thronw by `assert` to improve efficiency.
-- MODIFIED: Modifier behavior changed. 
+- Remove Error batching to improve efficiency.
+- Remove complex error messages thrown by `assert` to improve efficiency.
 
 ## Usage:
 ### Installation
@@ -18,6 +17,8 @@ npm install --save duck-check
 ```
 
 ### Quick Start
+
+*([skip to guide](#guide))*
 
 **Getting started**
 
@@ -80,6 +81,13 @@ is( { key: String } )( { wrong: 42 } ) // -> false
 is( { key: String } )( { key: 'value', other: 42 } ) // -> true
 ```
 
+**[Reusing previous checker functions](#functions)**
+
+```js
+const Person = assert({ name: String, age: Number })
+assert([ Person ])([ { name: 'John', age: 45 }, { name: 'Jane', age: 55 } ]) // -> true
+```
+
 **[Mixed Objects and Arrays](#midxed-objects-and-arrays)**
 
 ```js
@@ -110,15 +118,6 @@ is({ x: either(Number, String)})({x: 1}) // -> true
 is({ x: either(Number, String)})({x: false}) // -> false
 ```
 
-**[Custom Modifiers](#custom-modifiers)**
-
-```js
-const odd = n => n % 2 !== 0
-is(odd)(1) // -> true
-is( [ odd ] )( [1,3,5] ) // -> true
-is( [ odd ] )( [1,3,10] ) // -> false
-```
-
 ### Guide
 #### Importing:
 
@@ -133,9 +132,7 @@ ES6 modules:
 import { check, assert, modifiers } from 'duck-check'
 ```
 
-#### Concepts
-
-**Schema**
+#### Schema
 
 A schema represents the expected structure or type of your data. It is passed as an argument to the `check`, `assert` and other modifier functions. 
 
@@ -152,7 +149,7 @@ A valid schema is:
 
 **`check(schema)(data)`**
 
-Throws a `TypeError` if the data does not match the schema. Returns `undefined` otherwise.
+Returns a function that takes data as its argument, and throws a `TypeError` if the data does not match the schema. Returns `undefined` otherwise.
 
 **`is(schema)(data)`**
 
@@ -160,4 +157,110 @@ Alias for `assert`
 
 **`assert(schema)(data)`**
 
-Returns `false` if the data does not match the schema. Returns `true` otherwise.
+Returns a function that takes data as its argument, and returns `false` if the data does not match the schema. Returns `true` otherwise.
+
+#### Checking data
+
+##### Typed Arrays
+
+A typed array is an array where all elements are of one type. For instance, an array of numbers is a typed array.
+
+```js
+is([ Number ])( [1,2,3] )
+```
+
+##### Positional Arrays
+
+A positional array is an array where each element in the array is of one specific type. For instance, an array with a first number, then a string.
+
+```js
+is([ Number, String ])( [1, 'a'] )
+```
+
+##### Objects
+
+An object has keys and values. For instance, an object with a key of `key` and a value of type `String`.
+
+```js
+is({ key: String })( {key: 'value' })
+```
+
+The test passes if all keys declared in the schema object are defined in the data, and if the value of each key matches the type declared in the schema. Keys declared in the data but not in the schema are ignored. 
+
+To check for a key with any value, use the `any` modifier. 
+
+##### Mixed Objects and Arrays
+
+Since any schema can contain other schemas, you can check for arrays of objects, objects containing arrays, etc... You can compose your schemas as needed without limit (as long as they are not recursive)
+
+##### Functions
+
+If you pass a function in the schema, it will be called with the data as its argument. If the function returns `true`, the test passes. if it returns `false`, or throws an error, the test fails. 
+
+This means previous calls to `check` or `assert` can be used in any schema.
+
+```js
+const Person = assert({ name: String, age: Number }) // ! \\ Do not use this naming convention in project involving OOP classes!
+assert([ Person ])([ { name: 'John', age: 45 }, { name: 'Jane', age: 55 } ]) // -> true
+```
+
+You can also define your own functions as needed. 
+
+```js
+const even = n => n % 2 === 0
+is([even])([20, 22]) // -> true
+is([even])([20, 21]) // -> false
+```
+
+##### Modifiers
+
+Modifiers take a schema, and alter the result of a check.
+
+Modifiers can be used anywhere in a schema. For instance, you can declare an array of either numbers or strings. 
+
+```js
+is([ either(Number, String) ])([1, 'a'])
+```
+
+**`any(data)`**
+
+A function tha always returns true. Do not call it in a schema declaration.
+
+```js
+is(any)() // -> true
+```
+
+**`not(schema)`**
+
+Returns a function that takes in data and returns the negation of `check(schema)(data)`. 
+
+```js
+not(Number)(null) // -> true
+not(Number)(1) // -> false
+check(not(Number))(1) // -> TypeError
+```
+
+**`either(schema_a, schema_b)`**
+
+Returns a function that takes in data and returns `true` if either schemas match the data. 
+
+```js
+either([ Number ], { x: Number, y: Number } )( [ 1, 2 ] ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, y: 2 } ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, wrong: 2 } ) // -> false
+```
+
+**`oneOf(...args)`**
+
+alias of `one_of`
+
+**`one_of(...args)`**
+
+Returns a function that takes in data and returns `true` if one of the schemas passed as arguments match the data. 
+
+```js
+one_of(Number, String, null)(1) // -> true
+one_of(Number, String, null)('a') // -> true
+one_of(Number, String, null)(null) // -> true
+one_of(Number, String, null)(NaN) // -> false
+```
