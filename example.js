@@ -71,7 +71,3 @@ const odd = n => n % 2 !== 0
 is(odd)(1) // -> true
 is( [ odd ] )( [1,3,5] ) // -> true
 is( [ odd ] )( [1,3,10] ) // -> false
-
-console.log(is(Number)(() => {}))
-
-
