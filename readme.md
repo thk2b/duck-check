@@ -34,7 +34,7 @@ const {
 } = require('duck-check')
 ```
 
-**[Basic checks](#basic-checks)**
+**Basic checks**
 
 ```js
 check(Number)(1) // -> true
