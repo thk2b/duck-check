@@ -5,17 +5,10 @@
 [![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
-# v2.0.0 TODO:
-
-- Write docs
-- Publish
-
-### New in v2.0.0
+## New in v2.0.0
 - REMOVED: Error batching to improve efficiency.
 - REMOVED: Complex error messages thronw by `assert` to improve efficiency.
 - MODIFIED: Modifier behavior changed. 
-
-
 
 ## Usage:
 ### Installation
@@ -139,6 +132,10 @@ ES6 modules:
 ```js
 import { check, assert, modifiers } from 'duck-check'
 ```
+
+#### Concepts
+
+#### API
 
 #### Basic Checks
 
