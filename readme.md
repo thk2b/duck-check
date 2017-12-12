@@ -5,17 +5,9 @@
 [![npm version](https://badge.fury.io/js/duck-check.svg)](https://badge.fury.io/js/duck-check)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
-# v2.0.0 TODO:
-
-- Write docs
-- Publish
-
-### New in v2.0.0
-- REMOVED: Error batching to improve efficiency.
-- REMOVED: Complex error messages thronw by `assert` to improve efficiency.
-- MODIFIED: Modifier behavior changed. 
-
-
+## New in v2.0.0
+- Remove Error batching to improve efficiency.
+- Remove complex error messages thrown by `assert` to improve efficiency.
 
 ## Usage:
 ### Installation
@@ -25,87 +17,105 @@ npm install --save duck-check
 ```
 
 ### Quick Start
+
+*([skip to guide](#guide))*
+
+**Getting started**
+
 ```js
+const { 
+ assert, 
+ is, 
+ check, 
+ not, 
+ one_of, oneOf,
+ either, 
+ any 
+} = require('duck-check')
+```
 
-const { check, assert, modifiers } = require('duck-check')
-const { not, any, either, nonEmpty } = modifiers
+**Basic checks**
 
-check(Number)(1)
-check(Number)(NaN) 
-/*
-TypeError:
- - Expected number: Got NaN
-*/
+```js
+check(Number)(1) // -> true
+check(Number)("i'm not a number") // -> TypeError
 
-assert(Number)(1) /* true */
-assert(Number)('a') /* false */
+assert(String)('hello world!') // -> true
+assert(String)(42) // -> false
 
-check(Boolean)(true)
-check(Boolean)('very true')
-/*
-TypeError:
- - Expected boolean: Got string 'very true'
-*/
+is(String)('hello world!')// -> true
+is(String)(42)// -> false
 
-// Reuse a checker-function
-const validate_person = check({
-  name: String, 
-  age: Number,
-  transactions: [{
-      amount: Number
-  }]
-})
+is(Date)(new Date()) // -> true
+is(Date)('today') // -> false
 
-validate_person({
-  name: 'Jane Doe', 
-  age: 46,
-  transactions: [{
-      amount: 12.32
-  },{
-      amount: 1234,
-  }]
-})
+is(Function)(() => "i'm a function") // -> true
 
-validate_person({
-  name: 'Joe Blank', 
-  age: 46,
-  transactions: [{
-      amount: NaN
-  }]
-})
-/*
-TypeError:
- - Invalid property in object {"name":"Joe Blank","age":46,"transactions":[{"amount":null}]}:
-     - Invalid element in array [{"amount":null}]:
-         - 2 invalid properties in object {"amount":null}:
-             - Expected number: Got NaN
-*/
+const even = n => n % 2 === 0
+is(even)(20) // -> true
+is(even)(3) // -> false
+```
 
-// check for class instance
-assert(Date)(new Date()) /* true */
-assert(Date)(null) /* false */
+**[Typed Arrays](#typed-arrays)**
 
-assert(not(null))(1) /* true */
-check(not(null))(null)
-/*
-TypeError:
- - Invalid type: custom check failed on null:
-     - Expected not null: Got null 
-*/
+```js
+is([ Number ])([1,2,3]) // -> true
+is([ Number ])([1,'2',3]) // -> false
+is([ Number ])([]) // -> false
+is([ Number ])(1) // -> false
+```
 
-assert(not(not(Number)))(1) /* true */
-assert({x: any()})({x: 1}) /* true */
-assert({x: any()})({abc: 1}) /* false */
+**[Positional Arrays](#positional-arrays)**
 
-assert(either(String, Number))(1) /* true */
-assert(either(String, Number))('a') /* true */
-check(either(String, Number))(undefined) 
-/*
-TypeError:
- - Invalid type: custom check failed on undefined:
-     - Expected either string or number: Got undefined
-*/
+```js
+is([ Number, String, Boolean ])([1,'a', true]) // -> true
+is([ Number, String, Boolean ])([1,false, 'a']) // -> false
+```
 
+**[Objects](#objects)**
+
+```js
+is( { key: String } )( { key: 'value '} ) // -> true
+is( { key: String } )( { key: 42 } ) // -> false
+is( { key: String } )( { wrong: 42 } ) // -> false
+is( { key: String } )( { key: 'value', other: 42 } ) // -> true
+```
+
+**[Reusing previous checker functions](#functions)**
+
+```js
+const Person = assert({ name: String, age: Number })
+assert([ Person ])([ { name: 'John', age: 45 }, { name: 'Jane', age: 55 } ]) // -> true
+```
+
+**[Mixed Objects and Arrays](#midxed-objects-and-arrays)**
+
+```js
+is( [ { key: String } ] )( [ { key: 'first' }, { key: 'second' } ] ) // -> true
+is( [ { key: String } ] )( [ { key: 'first' }, { wrong: 'second' } ] ) // -> false
+```
+
+**[Modifiers](#modifiers)**
+
+```js
+not(Number)(null) // -> true
+not(Number)(1) // -> false
+check(not(Number))(1) // -> TypeError
+
+one_of(Number, String, null)(1) // -> true
+one_of(Number, String, null)('a') // -> true
+one_of(Number, String, null)(null) // -> true
+one_of(Number, String, null)(NaN) // -> false
+
+either([ Number ], { x: Number, y: Number } )( [ 1, 2 ] ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, y: 2 } ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, wrong: 2 } ) // -> false
+
+is({ x: any })({ x: 1 }) // -> true
+is({ x: any })({ x: NaN }) // -> true
+is({ x: any })({ wrong: 1 }) // -> false
+is({ x: either(Number, String)})({x: 1}) // -> true
+is({ x: either(Number, String)})({x: false}) // -> false
 ```
 
 ### Guide
@@ -122,219 +132,135 @@ ES6 modules:
 import { check, assert, modifiers } from 'duck-check'
 ```
 
-#### API
+#### Schema
 
-`duck-check` exposes two functions.
+A schema represents the expected structure or type of your data. It is passed as an argument to the `check`, `assert` and other modifier functions. 
 
-##### check(schema)(data)
-##### assert(schema)(data) 
+A valid schema is: 
+- A primitive type constructor such as `Number`, `String`, `Boolean`, `Function`
+- A primitive object, such as `null`, `undefined`, `NaN`
+- Any class constructor
+- An array litteral containing any valid schema (interpreted as a [typed array](typed-arays))
+- An array containing multiple valid schemas (interpreted as a [positional array](positional-arays))
+- An object with a key and any valid schema as a value
+- A function
 
-A valid schema is either a constructor, an object, an array, or an anonymous function.
-Objects and array schemas are valid if they also contain a valid schema.
-The following are examples of basic valid schemas: 
+#### Main API
+
+**`check(schema)(data)`**
+
+Returns a function that takes data as its argument, and throws a `TypeError` if the data does not match the schema. Returns `undefined` otherwise.
+
+**`is(schema)(data)`**
+
+Alias for `assert`
+
+**`assert(schema)(data)`**
+
+Returns a function that takes data as its argument, and returns `false` if the data does not match the schema. Returns `true` otherwise.
+
+#### Checking data
+
+##### Typed Arrays
+
+A typed array is an array where all elements are of one type. For instance, an array of numbers is a typed array.
 
 ```js
-check(Number)
-check([Boolean]) // Array of Booleans
-check({a: String}) // Object with key a of type string
+is([ Number ])( [1,2,3] )
 ```
 
-`check` and `assert` both return functions that take any data as argument. 
-You can directly call this function:
+##### Positional Arrays
+
+A positional array is an array where each element in the array is of one specific type. For instance, an array with a first number, then a string.
 
 ```js
-check(Number)(1)
-assert(Number)(NaN) /* false */
-```
-Or you can assign it to a variable:
-
-```js
-validate_person = check({name: String, age: Number})
-assert_person = assert({name: String, age: Number})
-validate_person({name: 'jane', age: 30}) 
+is([ Number, String ])( [1, 'a'] )
 ```
 
-We will use the following naming convention: 
+##### Objects
+
+An object has keys and values. For instance, an object with a key of `key` and a value of type `String`.
 
 ```js
-const Person = check({name: String, age: Number})
-```
-Warning: Do not use this naming convention in a project involving object-oriented classes.
-
-We refer to the function returned by `check` or `assert` as a 'checker function'. 
-
-Any checker function can be used anywhere in a schema. 
-For instance, we can declare an array of `Person`
-
-```js
-assert([Person])([{name: 'jane', age: 30}, {name: 'john', age: 60}]) /* true */
-check([Person])([{name: 'jane', age: 30}, {name: 'john's, age: NaN}]) 
-/*
-TypeError:
- - Invalid element in array [{"name":"jane","age":30},{"name":"john","age":"01"}]:
-     - Invalid type: custom check failed on {"name":"john","age":"01"}:
-         - Invalid property in object {"name":"john","age":"01"}:
-             - Expected number: Got string 01
-*/
+is({ key: String })( {key: 'value' })
 ```
 
-You can freely mix checker-functions obtained through `assert` and `check`. 
+The test passes if all keys declared in the schema object are defined in the data, and if the value of each key matches the type declared in the schema. Keys declared in the data but not in the schema are ignored. 
+
+To check for a key with any value, use the `any` modifier. 
+
+##### Mixed Objects and Arrays
+
+Since any schema can contain other schemas, you can check for arrays of objects, objects containing arrays, etc... You can compose your schemas as needed without limit (as long as they are not recursive)
+
+##### Functions
+
+If you pass a function in the schema, it will be called with the data as its argument. If the function returns `true`, the test passes. if it returns `false`, or throws an error, the test fails. 
+
+This means previous calls to `check` or `assert` can be used in any schema.
 
 ```js
-const asserter = assert(Number)
-const checker = check(Number)
-
-assert([checker])([1,2,3]) /* true */
-check([asserter])([1,2,3]) 
-
-assert([checker])([1,2,'a']) /* false */
-check([asserter])([1,2,'a']) /* TypeError */
+const Person = assert({ name: String, age: Number }) // ! \\ Do not use this naming convention in project involving OOP classes!
+assert([ Person ])([ { name: 'John', age: 45 }, { name: 'Jane', age: 55 } ]) // -> true
 ```
 
-Any anonymous function in a schema will be called with the object being tested. If it returns false or throws an error, the test is considered failed.
-
-#### Arrays
-
-`duck-check` will check all the elements in the array and find all invalid ones.
-There are two ways of declaring arrays.
-
-The following declaration means we want an array of numbers, of any length, potentially empty. 
-Use the `nonEmpty` modifier to declare a non-empty array, see the modifier section for more details.
-
-Note that arrays can be nested.
+You can also define your own functions as needed. 
 
 ```js
-check([Number])([1,2,3])
-assert([Number])(1) /* false */
-check([[Number]])([[1,'2','a'],[1,2,'a']]) 
-/*
-TypeError:
- - 2 invalid elements in array [[1,"2","a"],[1,2,"a"]]:
-     - 2 invalid elements in array [1,"2","a"]:
-         - Expected number: Got string '2'
-         - Expected number: Got string 'a'
-     - Invalid element in array [1,2,"a"]:
-         - Expected number: Got string 'a'
-*/
-```
- 
-The following declaration means we want an array with a number in first position, an a string in second.
-
-This refered to as a positional array, since the position of element matters.
-
-```js
-
-check([ Number, String ])([1, '1'])
-check([ Number, String ])([1, 456, '1']) 
-/*
-TypeError:
- - Invalid element in array [1,456,"1"]:
-     - Expected string: Got number '456'
-*/
+const even = n => n % 2 === 0
+is([even])([20, 22]) // -> true
+is([even])([20, 21]) // -> false
 ```
 
-We can declare much more complicated schemas.
+##### Modifiers
+
+Modifiers take a schema, and alter the result of a check.
+
+Modifiers can be used anywhere in a schema. For instance, you can declare an array of either numbers or strings. 
 
 ```js
-check([[ Number, [ String ]]])([ /* array of (number and array of string) */
-    [ 1, [ 'a', 'b' ]], [ 2, [ 'c','d' ]]
-])
-check([[ Number, [ String ]]])([
-    [ 1, [ 'a', 'b' ]], [ 2, [ null,'d' ]]
-]) 
-/*
-TypeError:
- - Invalid element in array [[1,["a","b"]],[2,[1,"d"]]]:
-     - Invalid element in array [2,[1,"d"]]:
-         - Invalid element in array [1,"d"]:
-             - Expected string: Got number '1'
-*/
+is([ either(Number, String) ])([1, 'a'])
 ```
 
-#### Objects
+**`any(data)`**
 
-If a key declared in the schema is not in the object, an error is thrown.
+A function tha always returns true. Do not call it in a schema declaration.
 
 ```js
-const Point = check({x: Number, y: Number})
-Point({ x: 10, oups: 15 }) 
-/*
-TypeError:
- - Invalid properties in object {"x":10,"oups":15}:
-     - Expected key 'y': Was undefined
-*/
+is(any)() // -> true
 ```
 
-Keys not declared in the schema are ignored. 
+**`not(schema)`**
+
+Returns a function that takes in data and returns the negation of `check(schema)(data)`. 
 
 ```js
-Point({
-    x: 10, 
-    y: 15, 
-    some_other_key: 'some_other value'
-})
+not(Number)(null) // -> true
+not(Number)(1) // -> false
+check(not(Number))(1) // -> TypeError
 ```
 
-You can test for a class instance by passing the constructor in the schema. 
+**`either(schema_a, schema_b)`**
 
+Returns a function that takes in data and returns `true` if either schemas match the data. 
 
 ```js
-assert(Date)(new Date())
-assert(Date)('april fools') /* false */
+either([ Number ], { x: Number, y: Number } )( [ 1, 2 ] ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, y: 2 } ) // -> true
+either([ Number ], { x: Number, y: Number } )( { x: 1, wrong: 2 } ) // -> false
 ```
 
-This feature is added as a convenience. However, it is not duck-typing as such and may be beyond the intended scope of the project.
+**`oneOf(...args)`**
 
-#### Composing array and objects
+alias of `one_of`
 
-In a Scheam, an array can naturally contain objects and vic-versa.
+**`one_of(...args)`**
 
-```js
-assert([{x: Number, y: Number}])([{x: 1, y: 2}, {x: 3, y: 4}]) /* true */
-assert([{x: Number, y: Number}])([{x: 1, y: NaN}, {x: 3, y: 4}]) /* false */
-```
-
-#### Modifiers
-
-An object containing all modifiers is exported by duck-check. 
+Returns a function that takes in data and returns `true` if one of the schemas passed as arguments match the data. 
 
 ```js
-const { modifiers } = require('duck-check')
-const { add, any, not, nonEmpty } = modifiers
-```
-
-Modifiers are called with schemas and return anonymous functions that take the data being tested. 
-There are four modifiers: 
-
-##### any() - Takes no argument. You MUST call the function. Passing the function without calling makes the schema invalid, because functions in schemas must be anonymous. 
-```js
-assert(any())() /* always true */
-assert({x: any()})({x: 1}) /* true */
-assert({x: any()})({y: 1}) /* false */
-```
-##### not(schema) - Inverts the result of the check
-```js
-assert(not(any()))(1) /* always false */
-check(not(null))(null) 
-/*
-TypeError:
- - Invalid type: custom check failed on null:
-     - Expected not null: Got null
-*/
-```
-##### either(schema_a, schema_b) - First tests with the first schema. If it fails, tests with the second schema. 
-```js
-assert(either(String, Number))(1) /* true */
-assert(either(String, Number))('a') /* true */
-assert(either(String, Number))( undefined ) /* false */
-```
-##### nonEmpty(array) - Specify a non-empty array
-##### non_empty(array) - Specify a non-empty array
-```js
-check(nonEmpty([]))([]) 
-/*
-TypeError:
- - Invalid type: custom check failed on []:
-     - Expected non-empty array.
-*/
+one_of(Number, String, null)(1) // -> true
+one_of(Number, String, null)('a') // -> true
+one_of(Number, String, null)(null) // -> true
+one_of(Number, String, null)(NaN) // -> false
 ```
