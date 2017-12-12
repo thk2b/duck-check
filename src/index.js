@@ -1,9 +1,11 @@
 const { check, assert } = require('./main')
-const { either, not, any, one_of } = require('./modifiers')
+const modifiers = require('./modifiers')
+const { either, not, any, one_of } = modifiers
 
 module.exports = {
     check, 
     assert, 
+    modifiers,
     is: assert,
     either, 
     not, 

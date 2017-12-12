@@ -1,6 +1,4 @@
-const { assert, is, check, not, one_of, either, any } = require('./')
-
-console.log(is)
+const { assert, is, check, not, one_of, either, any, modifiers } = require('./')
 /* Basic checks */
 
 check(Number)(1) // -> true
