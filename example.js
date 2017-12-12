@@ -1,5 +1,6 @@
-const { assert, is, check, not, one_of, either, any } = require('./src')
+const { assert, is, check, not, one_of, either, any } = require('./')
 
+console.log(is)
 /* Basic checks */
 
 check(Number)(1) // -> true
