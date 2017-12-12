@@ -137,24 +137,27 @@ import { check, assert, modifiers } from 'duck-check'
 
 **Schema**
 
+A schema represents the expected structure or type of your data. It is passed as an argument to the `check`, `assert` and other modifier functions. 
+
+A valid schema is: 
+- A primitive type constructor such as `Number`, `String`, `Boolean`, `Function`
+- A primitive object, such as `null`, `undefined`, `NaN`
+- Any class constructor
+- An array litteral containing any valid schema (interpreted as a [typed array](typed-arays))
+- An array containing multiple valid schemas (interpreted as a [positional array](positional-arays))
+- An object with a key and any valid schema as a value
+- A function
+
 #### Main API
 
 **`check(schema)(data)`**
 
+Throws a `TypeError` if the data does not match the schema. Returns `undefined` otherwise.
+
 **`is(schema)(data)`**
+
+Alias for `assert`
 
 **`assert(schema)(data)`**
 
-#### Basic Checks
-
-#### Typed Arrays
-
-#### Positonal Arrays
-
-#### Objects
-
-#### Mixed Objects and Arrays
-
-#### Modifiers 
-
-#### Custom Modifiers 
+Returns `false` if the data does not match the schema. Returns `true` otherwise.
