@@ -1,1 +1,2 @@
-const {assert, check, modifiers} = require('./index')
+const { assert, check, modifiers } = require('./index')
+

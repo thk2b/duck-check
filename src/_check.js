@@ -4,9 +4,8 @@ const get_type = require('./get_type')
  * Private function. 
  * Examines the schema and runs the appropriate checks
  * @param {*} schema 
- * @param {*} duck 
- * @param {String} schema_type - Optional type - In modifiers, it is necesary to know the type before calling check. So it is more efficient to get them once and pass them
- * @param {String} duck_type - idem
+ * @param {*} duck
+ * @returns {Boolean} – True if duck matches schema
  */
 function _check(schema, duck){
     const schema_type = get_type(schema)
@@ -29,11 +28,6 @@ function _check(schema, duck){
     }
 }
 
-/**
- * Checks the type and existance of all keys declared on the schema
- * @param {Object} obj
- * @param {Object} schema 
- */
 function _check_object(schema, obj){
     for(let key in schema){
         if( !_check(schema[key], obj[key])) return false
@@ -41,11 +35,6 @@ function _check_object(schema, obj){
     return true
 }
 
-/**
- * Checks array elements against an array schema or positional array schema. 
- * @param {Array} schema 
- * @param {Array} arr 
- */
 function _check_array(schema, arr){
     if(schema.length === 1){ 
         /* array of unique type */
@@ -60,11 +49,6 @@ function _check_array(schema, arr){
     }
 }
 
-/**
- * Checks if the value passes the check function provided. 
- * @param {Function} fn - the result of a previous `check(schema) call` or a modifier or a custom anonymous function
- * @param {*} duck
- */
 function _check_function(fn, duck){
     if(fn.name === 'Boolean') return false /* hack */
     try {

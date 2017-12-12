@@ -1,5 +1,4 @@
-const { assert, modifiers } = require('../index')
-const { either, not, any, one_of } = modifiers
+const { assert, either, not, any, one_of } = require('../index')
 
 describe('modifier either', () => {
     it('should return true if duck is either schemas', () => {
