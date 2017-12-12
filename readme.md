@@ -135,7 +135,15 @@ import { check, assert, modifiers } from 'duck-check'
 
 #### Concepts
 
-#### API
+**Schema**
+
+#### Main API
+
+**`check(schema)(data)`**
+
+**`is(schema)(data)`**
+
+**`assert(schema)(data)`**
 
 #### Basic Checks
 
