@@ -33,6 +33,9 @@ describe('modifier any', () => {
         expect(
             assert({a: any})({a: 'a'})
         ).toBe(true)
+        expect(
+            assert({a: any})({wrong: 'a'})
+        ).toBe(false)
         /* ... */
     })
 })

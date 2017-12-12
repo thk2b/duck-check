@@ -3,7 +3,8 @@ const { either, not, any, one_of } = require('./modifiers')
 
 module.exports = {
     check, 
-    assert, is: assert,
+    assert, 
+    is: assert,
     either, 
     not, 
     any, 

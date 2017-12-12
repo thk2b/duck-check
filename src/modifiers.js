@@ -33,7 +33,7 @@ const either = (a, b) => one_of(a, b)
  * Wildcard: makes any type pass the test. To be used in an array or object schema
  * @returns {Boolean} - Always returns true. 
  */
-const any = () => true
+const any = d => d !== undefined
 
 module.exports = {
     either, 

@@ -66,12 +66,25 @@ describe('private _check', () => {
             _check(Date, new Date())
         ).toBe(true)
     })
+
     it(`should return false if duck is a custom class constructor and schema is not the custom constructor`, () => {
         expect(
             _check(Number, new Date())
         ).toBe(false)
     })
 
+    it(`should return false if duck is a function and schema is a custom function`, () => {
+        const _fn = () => false
+        expect(
+            _check(_fn, () => {})
+        ).toBe(false)
+    })
+    it(`should return false if duck is not a function and schema is the Function constructor`, () => {
+        const _fn = () => true
+        expect(
+            _check(Function, 1)
+        ).toBe(false)
+    })
 })
 
 describe('private _check on array', () => {

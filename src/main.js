@@ -16,7 +16,7 @@ function check(schema){
         if( _check(schema, duck)) {
             return
         } else {
-            throw new TypeError(`Type check failed.\n\tExpected: ${schema}\n\tGot: ${duck}`)
+            throw new TypeError(`Type check failed`)
         }
     }
 }

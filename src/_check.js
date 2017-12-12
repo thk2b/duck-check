@@ -18,11 +18,13 @@ function _check(schema, duck){
             return duck_type === 'object' ? _check_object(schema, duck) : false
         case 'anonymous_function':
             return _check_function(schema, duck)
-        case 'function':            
+        case 'function':
+            if(schema.name === 'Function'){
+                return duck_type === 'function' || duck_type === 'anonymous_function'
+            }   
             return schema.name.toLowerCase() === duck_type ?
-                true : duck_type === 'anonymous_function' ? 
-                    true : duck_type === 'object' ? 
-                        duck instanceof schema : _check_function(schema, duck)
+                true : duck_type === 'object' ? 
+                    duck instanceof schema : _check_function(schema, duck)
         default:
             return schema_type === duck_type
     }
