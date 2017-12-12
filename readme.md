@@ -77,7 +77,7 @@ is([ Number, String, Boolean ])([1,false, 'a']) // -> false
 ```js
 is( { key: String } )( { key: 'value '} ) // -> true
 is( { key: String } )( { key: 42 } ) // -> false
-is( { key: String } )( { wrong: 42 } ) // -> false
+is( { key: String } )( { wrong: 'value' } ) // -> false
 is( { key: String } )( { key: 'value', other: 42 } ) // -> true
 ```
 
@@ -123,13 +123,13 @@ is({ x: either(Number, String)})({x: false}) // -> false
 
 In Node:
 ```js
-const { check, assert, modifiers } = require('duck-check')
+const { check, assert, is, modifiers, not, one_of, oneOf, any, either } = require('duck-check')
 ```
 
 ES6 modules:
 
 ```js
-import { check, assert, modifiers } from 'duck-check'
+import { check, assert, is, modifiers, not, one_of, oneOf, any, either } from 'duck-check'
 ```
 
 #### Schema
@@ -141,8 +141,8 @@ A valid schema is:
 - A primitive object, such as `null`, `undefined`, `NaN`
 - Any class constructor
 - An array litteral containing any valid schema (interpreted as a [typed array](typed-arays))
-- An array containing multiple valid schemas (interpreted as a [positional array](positional-arays))
-- An object with a key and any valid schema as a value
+- An array litteral containing multiple valid schemas (interpreted as a [positional array](positional-arays))
+- An object litteral with a key and any valid schema as a value
 - A function
 
 #### Main API
@@ -171,7 +171,7 @@ is([ Number ])( [1,2,3] )
 
 ##### Positional Arrays
 
-A positional array is an array where each element in the array is of one specific type. For instance, an array with a first number, then a string.
+A positional array is an array where each position in the array is of a specific type. For instance, an array with a first number, then a string.
 
 ```js
 is([ Number, String ])( [1, 'a'] )
@@ -187,11 +187,11 @@ is({ key: String })( {key: 'value' })
 
 The test passes if all keys declared in the schema object are defined in the data, and if the value of each key matches the type declared in the schema. Keys declared in the data but not in the schema are ignored. 
 
-To check for a key with any value, use the `any` modifier. 
+To check for a key with any value, use the `any` [modifier](#modifiers). 
 
 ##### Mixed Objects and Arrays
 
-Since any schema can contain other schemas, you can check for arrays of objects, objects containing arrays, etc... You can compose your schemas as needed without limit (as long as they are not recursive)
+Since any schema can contain other schemas, you can check for arrays of objects, objects containing arrays, etc... You can compose your schemas as needed without limit (as long as they are not recursive).
 
 ##### Functions
 
@@ -214,17 +214,17 @@ is([even])([20, 21]) // -> false
 
 ##### Modifiers
 
-Modifiers take a schema, and alter the result of a check.
+Modifiers take a schema, and alter the result of the check.
 
-Modifiers can be used anywhere in a schema. For instance, you can declare an array of either numbers or strings. 
+A modifier can be used anywhere in a schema, or even with other modifiers. For instance, you can declare an array of neither numbers nor strings. 
 
 ```js
-is([ either(Number, String) ])([1, 'a'])
+is([ not(either(Number, String)) ])([1, 'a']) // -> false
 ```
 
 **`any(data)`**
 
-A function tha always returns true. Do not call it in a schema declaration.
+A function that always returns true. Do not call the function when declaring the schema.
 
 ```js
 is(any)() // -> true
