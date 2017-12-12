@@ -8,5 +8,6 @@ module.exports = {
     either, 
     not, 
     any, 
-    one_of
+    one_of,
+    oneOf: one_of
 }
