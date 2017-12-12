@@ -1,91 +1,56 @@
-const { either, not, non_empty, any } = require('../modifiers')
-const { check, assert } = require('../index')
+const { assert, either, not, any, one_of } = require('../index')
 
-describe('modifier either', ()=>{
-    it('should work with simple assertions', () => {
-        expect(() => check(either(Number, String)(1)))
-            .not.toThrow()
-        expect(() => check(either(Number, String)('a')))
-            .not.toThrow()
-        expect(() => check(either(Number, String)(NaN)))
-            .toThrow()
-        expect(() => check(either(null, String)(null)))
-            .not.toThrow()
-        expect(assert(either(Number, String))(NaN))
-            .toBe(false)
+describe('modifier either', () => {
+    it('should return true if duck is either schemas', () => {
+        const run = either({a: Number}, [String, Date])
+        expect(
+            run({a: 1}) && run(['a', new Date()])
+        ).toBe(true)
     })
-    it('should work in nested schemas', () => {
-        expect(() => check([either(Number, String)])([1, 'a']))
-            .not.toThrow()
-        
-        const checker = check({
-            a: either(null, String), 
-            b: either([String], [Number])
-        })
-        expect(() => checker({
-            a: null,
-            b: ['a', 'a']
-        })).not.toThrow()
-        expect(() => checker({
-            a: 'null',
-            b: [1,2,3]
-        })).not.toThrow()
-        expect(() => checker({
-            a: null,
-            b: [1, 'a']
-        })).toThrow()
+    it('should return false if duck is neither schemas', () => {
+        const run = either({a: Number}, [String, Date])
+        expect(
+            run({b: 1}) && run(['a', 1])
+        ).toBe(false)
     })
 })
 
-describe('modifier not', ()=>{
-    it('should work with simple assertions', () => {
-        expect(() => check(not(Number)(1)))
-            .toThrow()
-        expect(() => check(not(Number)('a')))
-            .not.toThrow()
-        expect(() => check(not(Number)(NaN)))
-            .not.toThrow()
-        expect(() => check(not(null)(null)))
-            .toThrow()
-        expect(assert(not(Number))(NaN))
-            .toBe(true)
+describe('modifier not', () => {
+    it('should return false if duck matches schemas', () => {
+        expect(
+            not({a: Number})({a: 1})
+        ).toBe(false)
     })
-    it('should work in nested schemas', () => {
-        expect(() => check([not(Number)])([null, NaN]))
-            .not.toThrow()
-        expect(() => check([not(Number)])([1, 'a']))
-            .toThrow()
-        
-        const checker = assert({
-            a: not(null), 
-            b: not([String])
-        })
-
-        expect(checker({a: 1, b: 's'})).toBe(true)
-        expect(checker({a: 1, b: ['s']})).toBe(false)
-        expect(checker({a: null, b: 's'})).toBe(false)
-
-        expect(assert(not(not(Number)))(1)).toBe(true)
-    })
-})
-
-describe('modifier non_empty', () => {
-    it('should throw on empty arrays', () => {
-        expect(assert(non_empty([Number]))([1])).toBe(true)
-        expect(assert(non_empty([Number]))([ ])).toBe(false)
-    })
-    it('should ignore non-arrays', () => {
-        expect(assert(non_empty(Number))(1)).toBe(true)
+    it('should return true if duck does not match schema', () => {
+        expect(
+            not({a: Number})({b: 1})
+        ).toBe(true)
     })
 })
 
 describe('modifier any', () => {
-    it('should work', () => {
-        expect(assert(any())(Number)).toBe(true)
-        expect(assert(not(any()))(Number)).toBe(false)
-        expect(() => check({a: any()})({a: null}))
-            .not.toThrow()
-        expect(() => check({a: any()})({b: null}))
-            .toThrow()
+    it('should always return true', () => {
+        expect(
+            assert({a: any})({a: 'a'})
+        ).toBe(true)
+        expect(
+            assert({a: any})({wrong: 'a'})
+        ).toBe(false)
+        /* ... */
+    })
+})
+
+describe('modifier one_of', () => {
+    it('should return false if duck matches none of the arguments', () => {
+        expect(
+            one_of({a: Number}, [Number], [Number, Date])(0)
+        ).toBe(false)
+    })
+    it('should return true if duck matches one of the arguments', () => {
+        expect(
+            one_of({a: Number}, [Number], [Number, Date])({a: 1}) &&
+            one_of({a: Number}, [Number], [Number, Date])([1,2,3]) &&
+            one_of({a: Number}, [Number], [Number, Date])([1, new Date()])
+        ).toBe(true)
     })
 })

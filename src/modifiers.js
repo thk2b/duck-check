@@ -1,80 +1,43 @@
-const { _check } = require('./check')
-const { get_type } = require('./get_type')
-const { error_messages } = require('./errors')
+const { assert } = require('./main')
 
 /**
- * Throws if the test passes. Does nothing if the test fails.
- * @param {*} Schema - Any valid schema. Throws if it matches the duck.
+ * Inverts the result of a check.
+ * @param {*} Schema - Any valid schema. 
+ * @returns {Boolean} – False if duck matches schema.
  */
 const not = schema => duck => {
-    const schema_type = get_type(schema) 
-    const schema_name = schema_type === 'function' ? schema.name.toLowerCase() : schema_type
-    const duck_type = get_type(duck)
+    return !assert(schema)(duck)
+}
 
-    try{
-        _check(schema, duck, schema_type, duck_type)
-    } catch(e){
-        return 
-    }
-    if(schema_name === 'anonymous_function'){
-        throw {
-            message: error_messages[10]('another custom check', duck_type)
+/**
+ * @param {...*} – Any number of valid schemas
+ * @returns {Boolean} – True if duck matches one of the schemas
+ */
+function one_of(){
+    return duck => {
+        for(let arg of arguments){
+            if( assert(arg)(duck)) return true
         }
-    }
-    throw {
-        message: error_messages[10](schema_name, duck_type)
+        return false
     }
 }
 
 /**
- * Throws if both options are invalid
  * @param {*} a - First option. Any valid schema
  * @param {*} b - Second option. Any valid schema
+ * @returns {Boolean} - False if the duck matches neither schemas.
  */
-const either = (a, b) => duck => {
-    const type_a = get_type(a) 
-    const name_a = type_a === 'function' ? a.name.toLowerCase() : type_a
-    const type_b = get_type(b) 
-    const name_b = type_b === 'function' ? b.name.toLowerCase() : type_b
-    const duck_type = get_type(duck)
-    try {
-        _check(a, duck, type_a, duck_type)
-    } catch(e) {
-        try {
-            _check(b, duck, type_b, duck_type)
-        } catch (e) {
-            throw {
-                message: error_messages[11](name_a, name_b, duck_type, duck)
-            }
-        }
-    }
-}
+const either = (a, b) => one_of(a, b)
 
 /**
- * Throws if the array is empty
- * @param {Array}
+ * Wildcard: makes any type pass the test. To be used in an array or object schema
+ * @returns {Boolean} - Always returns true. 
  */
-const nonEmpty = non_empty = array => duck => {
-    if(Array.isArray(array)){
-        if(duck.length === 0){
-            throw {
-                message: 'Expected non-empty array.'
-            }
-        }
-    }
-    _check(array, duck)
-}
-
-/**
- * Wildcard: makes any type pass the test
- */
-const any = () => duck => {
-    return true
-}
+const any = d => d !== undefined
 
 module.exports = {
     either, 
     not,
-    non_empty, nonEmpty,
-    any
+    any,
+    one_of, oneOf: one_of
 }

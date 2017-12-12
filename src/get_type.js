@@ -26,13 +26,8 @@ const is = {
 
 function get_type(duck){
     const type = types.find( type => is[type](duck))
-    if(!type){
-        throw new Error(`Cannot find type of '${duck}'`)
-    }
+    if(!type) throw new Error(`Cannot find type of '${duck}'`)
     return type
 }
 
-module.exports = {
-    get_type,
-    is /* for testing */
-}
+module.exports = get_type
