@@ -1,10 +1,13 @@
 const path = require('path')
 
 module .exports =  {
-    entry: './src',
+    entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'build.js'
+        filename: 'build.js',
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
+        library: 'duck-check'
     },
     module: {
         rules: [{

@@ -1,11 +1,11 @@
 {
   "name": "duck-check",
-  "version": "2.1.1",
+  "version": "2.1.8",
   "description": "A minimalist tool to check the shape of objects and the type of properties, provided a declarative schema.",
-  "main": "./dist/build.js",
+  "main": "dist/build.js",
   "scripts": {
     "test": "jest",
-    "build": "webpack -p"
+    "build": "webpack"
   },
   "author": "",
   "repository": {
